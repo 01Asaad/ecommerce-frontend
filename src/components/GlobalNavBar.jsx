@@ -1,8 +1,13 @@
 import React from "react";
 import { useNavigate, NavLink } from 'react-router-dom';
 import DarkThemeManage from "./DarkThemeManage"
+import {useUser} from "../context/UserProvider"
 
+function addIfActive(fixedClasses, activeClass) {
+    return ({isActive}) => (fixedClasses + (isActive? (" "+activeClass) : ""))
+}
 export default function GlobalNavBar() {
+    const userCtx = useUser()
     const navigateTo = useNavigate()
     function handleLogin() {
         navigateTo("/login");
@@ -13,16 +18,16 @@ export default function GlobalNavBar() {
                 <h1 className="ml-4 text-3xl text-white">e-commerce</h1>
             </div>
             <div className="mx-5"> 
-                <NavLink to="/" className={({isActive}) => (isActive ? "text-red-500 mx-2" : "mx-2")}>Main</NavLink>
-                <NavLink className={({isActive}) => (isActive ? "text-red-500 mx-2" : "mx-2")} to="/products/add-product">Add-Product</NavLink>
+                <NavLink to="/" className={addIfActive("mx-2 hover:text-gray-500", "text-red-500")}>Main</NavLink>
+                <NavLink className={addIfActive("mx-2 hover:text-gray-500", "text-red-500")} to="/products/add">Add-Product</NavLink>
             </div>
             <div className="mr-2 flex justify-end items-center gap-x-2">
                 <DarkThemeManage></DarkThemeManage>
-                <button className="bg-white opacity-70 ml-1 p-2 rounded-full text-gray-900 hover:text-gray-400" onClick={handleLogin}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                <button className="bg-white opacity-70 w-10 h-10 ml-1 p-2 rounded-full text-gray-900 hover:text-gray-400 hover:cursor-pointer" onClick={handleLogin}>
+                    {(!userCtx.isLoggedIn || !userCtx.user) && (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
                         <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
-                    </svg>
-
+                    </svg>)}
+                    {(userCtx.isLoggedIn && userCtx.user) && (<span className="">{userCtx.user.firstName[0].toUpperCase()}</span>)}
                 </button>
             </div>
         </div >
