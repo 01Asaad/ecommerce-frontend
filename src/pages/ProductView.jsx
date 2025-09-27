@@ -68,7 +68,7 @@ export default function ProductView() {
         const doo = async () => {
             try {
                 const response = await axios.get(`http://localhost:3001/api/products/get-product/${productID}`)
-                setProductInfo(await response.json())
+                setProductInfo(response.data)
             } catch (error) {
                 setCurrentActiveModal("error:" + error.message)
             }

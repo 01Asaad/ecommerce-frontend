@@ -88,7 +88,7 @@ export default function ProductList({ products, loading }) {
         <h2 className="sr-only">Products</h2>
         <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product, index) => (
-            <Link key={product._id} to={`/products/view/${product._id}`} className="group">
+            <Link key={product._id} to={loading ? "#" : `/products/view/${product._id}`} className="group">
               {product.imageSrc === "blank" ? <div className="aspect-square w-full rounded-lg bg-gray-200 dark:bg-gray-800 object-cover group-hover:opacity-75 xl:aspect-7/8"/> : <img
                 alt={product.imageAlt}
                 src={product.imageSrc || prebuiltProducts[index % 8]["imageSrc"]}

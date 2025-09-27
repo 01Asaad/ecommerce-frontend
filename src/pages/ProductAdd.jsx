@@ -38,7 +38,9 @@ export default function ProductAdd() {
     }
   }, [location?.state?.from])
 
-
+  if (!userCtx.isLoggedIn) {
+    navigateTo("/login?redirectedfrom=/products/add")
+  }
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 

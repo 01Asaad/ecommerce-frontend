@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useReducer } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useUser } from "../context/UserProvider"
 
 const validateInputs = (identifier, password) => {
@@ -27,13 +27,15 @@ function reducerAction(state, event) {
 
 export default function Login() {
     const navigateTo = useNavigate()
+    const [searchParams, setSearchParams] = useSearchParams()
     const [formState, formDispatch] = useReducer(reducerAction, {email : "", emailIsValid : null, password : "", passwordIsValid : null, formIsValid : null})
     const { isLoggedIn, user, setUser } = useUser()
     const [error, setError] = useState('');
-
-    if (isLoggedIn) {
-        navigateTo("/")
-    }
+    useEffect(() => {
+        if (isLoggedIn) {
+            navigateTo("/")
+        }
+    }, []) //this is only to redirect when user directly puts /login in path; if isLoggedIn is to be changed then the handleLogin function is responsible for redirecting. otherwise it will try to navigate during render phase
 
     const handleLogin = async () => {
         const currentError = validateInputs(formState.email, formState.password)
@@ -48,7 +50,9 @@ export default function Login() {
             const response = await axios.post('http://localhost:3001/api/auth/login', { identifier : formState.email, password : formState.password });
             console.log('Login successful:', response.data);
             setUser(response.data)
-            navigateTo("/")
+            console.log("navigating to " + searchParams.get("redirectedfrom") || "/");
+            
+            navigateTo(searchParams.get("redirectedfrom") || "/")
         } catch (errorThrowback) {
             console.log(errorThrowback);
             
