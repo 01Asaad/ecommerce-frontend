@@ -13,7 +13,10 @@ export default function Signup() {
     const [error, setError] = useState('');
     const { isLoggedIn, user, setUser } = useUser()
 
-
+    if (isLoggedIn) {
+        navigateTo("/")
+    }
+    
     const validateInputs = () => {
         if (!email || !password || !username || !firstName || !lastName) {
             setError('Please fill all fields.');

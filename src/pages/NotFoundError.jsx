@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function ErrorPage() {
+export default function NotFoundErrorPage() {
     return (
         <div className="flex flex-col justify-center items-center my-10">
             <h1 className="text-7xl">Not found.</h1>

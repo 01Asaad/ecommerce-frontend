@@ -10,38 +10,50 @@ const validateInputs = (identifier, password) => {
     return '';
 };
 
-function action(state, event) {
-    if (event.type("EMAIL_CHANGE")) {
-        emailIsValid = isEmailValid(event.val)
-        return {email : event.val, emailIsValid : emailIsValid , password : state.password, passIsValid : state.passwordIsValid, formIsValid : emailIsValid && state.passwordIsValid}
-    }
-    else if (event.type("PASSWORD_CHANGE")) {
-        passwordIsValid = isPasswordValid(event.val)
-        return {email : state.email, emailIsValid : state.emailIsValid , password : event.val, passIsValid : isPasswordValid(event.val), formIsValid : state.emailIsValid && passwordIsValid}
+function reducerAction(state, event) {
+    switch (event.type) {
+        case "EMAIL_CHANGE" :
+            const emailIsValid = event.email
+            return {...state, email : event.email, emailIsValid : emailIsValid, formIsValid : emailIsValid && state.passwordIsValid}
+        
+        case "PASSWORD_CHANGE" :
+            const passwordIsValid = event.password.length >= 8
+            return {...state, password : event.password, passwordIsValid : passwordIsValid, formIsValid : state.emailIsValid && passwordIsValid}
+        default :
+            throw Error("unknown action")
+        
     }
 }
 
 export default function Login() {
     const navigateTo = useNavigate()
-    const [formState, formDispatch] = useReducer(action, {email : "", emailIsValid : null, pass : "", passIsValid : null, formIsValid : null})
+    const [formState, formDispatch] = useReducer(reducerAction, {email : "", emailIsValid : null, password : "", passwordIsValid : null, formIsValid : null})
     const { isLoggedIn, user, setUser } = useUser()
     const [error, setError] = useState('');
 
+    if (isLoggedIn) {
+        navigateTo("/")
+    }
+
     const handleLogin = async () => {
-        const currentError = validateInputs(identifier, password)
-        if (!currentError) {
+        const currentError = validateInputs(formState.email, formState.password)
+        if (currentError) {
+            console.log("setting login error to " + currentError);
+            
             setError(currentError)
             return
         };
 
         try {
-            const response = await axios.post('http://localhost:3001/api/auth/login', { identifier, password });
+            const response = await axios.post('http://localhost:3001/api/auth/login', { identifier : formState.email, password : formState.password });
             console.log('Login successful:', response.data);
             setUser(response.data)
             navigateTo("/")
-        } catch (error) {
-            console.error('Login failed:', error);
-            setError('Login failed. Please check your credentials and try again.');
+        } catch (errorThrowback) {
+            console.log(errorThrowback);
+            
+            console.error('Login failed:', errorThrowback.message);
+            setError(errorThrowback.message);
         }
     };
 
@@ -66,7 +78,7 @@ export default function Login() {
                             // ref={identifierRef}
                             placeholder="Email or username"
                             value={formState.email}
-                            onChange={(e) => setIdentifier(e.target.value)}
+                            onChange={(e) => formDispatch({type : "EMAIL_CHANGE", email : e.target.value})}
                         />
                         <input
                             className="tinput"
@@ -74,17 +86,17 @@ export default function Login() {
                             // ref={passwordRef}
                             placeholder="Password"
                             value={formState.password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => formDispatch({type : "PASSWORD_CHANGE", password : e.target.value})}
                         />
                         {error && <p className='text-red-600'>{error}</p>}
                         <button
-                            className="mt-10 w-full bg-blue-400 hover:bg-blue-700 text-white transition duration-100 rounded-md p-3 m-4"
+                            className="mt-10 w-full hover:cursor-pointer bg-blue-400 hover:bg-blue-700 text-white transition duration-100 rounded-md p-3 m-4"
                             type="submit"
                         >
                             Login
                         </button>
                         <a className="self-start text-blue-700 hover:text-blue-300 dark:hover:text-white" href='/reset-password'>Recover password</a>
-                        <button class="mt-10 w-full border border-gray-300 hover:border-blue-400 transition duration-100 text-gray-400 rounded-md p-3 m-4 flex justify-center items-center relative">
+                        <button className="mt-10 w-full border border-gray-300 hover:border-blue-400 transition duration-100 text-gray-400 rounded-md p-3 m-4 flex justify-center items-center relative">
                             <svg className="absolute left-4 p-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="36px" height="36px">
                                 <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
                                 <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />

@@ -1,12 +1,12 @@
 import React from "react";
-import ProductViewContainer from "../components/ProductViewContainer.jsx";
+import ProductViewer from "../components/ProductViewer.jsx";
 
 export default function Home() {
     return (
         <div className="">
-            <ProductViewContainer>
+            <ProductViewer>
 
-            </ProductViewContainer>
+            </ProductViewer>
         </div>
     )
 }

@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import { UserProvider } from './context/UserProvider.jsx';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -11,13 +9,13 @@ import Hello from './pages/Hello.jsx';
 import RootLayout from './pages/RootLayout.jsx';
 import ProductView from './pages/ProductView.jsx';
 import ProductAdd from './pages/ProductAdd.jsx';
-import ErrorPage from './pages/Error.jsx';
-
+import NotFoundErrorPage from './pages/NotFoundError.jsx';
 const router = createBrowserRouter([
-  {path : "/", element : <RootLayout/>, errorElement : <ErrorPage/>, children : [
+  {path : "/", element : <RootLayout/>, errorElement : <NotFoundErrorPage/>, children : [
     { index : true, element: <Home/> },
-    {path : "/products/:productID", element : <ProductView/>},
-    {path : "/products/add-product", element : <ProductAdd/>}
+    {path : "/products/view/:productID", element : <ProductView/>},
+    {path : "/products/add", element : <ProductAdd/>},
+    {path : "/products/modify/:productID", element : <ProductAdd/>}
   ]},
   { path: "/login", element: <Login/> },
   { path: "/signup", element: <Signup/> },

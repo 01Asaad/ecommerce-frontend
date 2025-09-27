@@ -9,12 +9,13 @@ function SortDropdown({ sortCriteria, sortOrder, setSortOrder, setSortCriteria }
   };
 
   return (
-    <div className="flex justify-end gap-2">
-      <select className="disabled:opacity-50 disabled:cursor-not-allowed" value={sortCriteria} onChange={handleCriteriaChange}>
+    
+    <div className="flex justify-end gap-2 mt-4 mx-4">
+      <select className="disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer dark:bg-gray-950" value={sortCriteria} onChange={handleCriteriaChange}>
         <option value="createdAt">Date Created</option>
         <option value="price">Price</option>
       </select>
-      <select value={sortOrder} onChange={handleOrderChange} className="">
+      <select className="disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer dark:bg-gray-950" value={sortOrder} onChange={handleOrderChange} >
         <option value="asc">Ascending</option>
         <option value="desc">Descending</option>
       </select>

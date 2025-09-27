@@ -7,7 +7,8 @@ const UserContext = createContext({
         firstName: '',
         lastName: '',
         username: "",
-        token: ''
+        token: '',
+        userID : ''
     },
     setUser: () => { }
 });
@@ -19,7 +20,8 @@ export const UserProvider = ({ children }) => {
         firstName: '',
         lastName: '',
         username: "",
-        token: ''
+        token: '',
+        userID : ''
     });
 
     const fetchUserData = async (token) => {
@@ -37,7 +39,8 @@ export const UserProvider = ({ children }) => {
                 firstName: '',
                 lastName: '',
                 username: "",
-                token: ''
+                token: '',
+                userID : ''
             });
             setIsLoggedIn(false);
             localStorage.removeItem('user');

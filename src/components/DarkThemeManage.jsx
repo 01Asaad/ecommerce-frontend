@@ -4,7 +4,7 @@ const { useState, useEffect } = React;
 export default function DarkThemeManage() {
   const [currentTheme, setCurrentTheme] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
-    return savedTheme === 'dark' || savedTheme === 'light' ? savedTheme : 'system';
+    return (savedTheme === 'dark' || savedTheme === 'light') ? savedTheme : 'system';
   });
 
   useEffect(() => {
@@ -29,10 +29,10 @@ export default function DarkThemeManage() {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const root = document.documentElement;
 
     const handleChange = () => {
       if (currentTheme === 'system') {
-        const root = document.documentElement;
         if (mediaQuery.matches) {
           root.classList.add('dark');
         } else {
@@ -71,7 +71,7 @@ export default function DarkThemeManage() {
       />
       <button
         onClick={systemDefaultHandle}
-        className={`relative cursor-pointer z-10 p-1 hover:text-gray-400 rounded-full ${currentTheme === 'system' ? 'text-black' : 'text-white'}`}
+        className={`relative cursor-pointer z-2 p-1 hover:text-gray-400 rounded-full ${currentTheme === 'system' ? 'text-black' : 'text-white'}`}
         aria-label="Use system theme"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
@@ -80,7 +80,7 @@ export default function DarkThemeManage() {
       </button>
       <button
         onClick={lightThemeHandle}
-        className={`relative cursor-pointer z-10 p-1 hover:text-gray-400 rounded-full ${currentTheme === 'light' ? 'text-black' : 'text-white'}`}
+        className={`relative cursor-pointer z-2 p-1 hover:text-gray-400 rounded-full ${currentTheme === 'light' ? 'text-black' : 'text-white'}`}
         aria-label="Use light theme"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
@@ -89,7 +89,7 @@ export default function DarkThemeManage() {
       </button>
       <button
         onClick={darkThemeHandle}
-        className={`relative cursor-pointer hover:text-gray-400 z-10 p-1 rounded-full ${currentTheme === 'dark' ? 'text-black' : 'text-white'}`}
+        className={`relative cursor-pointer hover:text-gray-400 z-2 p-1 rounded-full ${currentTheme === 'dark' ? 'text-black' : 'text-white'}`}
         aria-label="Use dark theme"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
