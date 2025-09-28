@@ -17,7 +17,7 @@ const Modal = props => {
             <div className="p-10">
                 <span>{props.content}</span>
             </div>
-            <footer className="flex bg-gray-200 dark:bg-gray-900 dark:border border-black justify-end w-full px-5 py-2">
+            <footer className="flex bg-gray-200 dark:bg-gray-900 dark:border-t border-black justify-end w-full px-5 py-2">
                 {(props.isCancelleable) && <button className={`${props.isError ? "bg-red-700" : "bg-blue-400 dark:bg-blue-900"} hover:cursor-pointer ${props.isError ? "hover:bg-red-800" : "hover:bg-blue-600"} text-white m-2 px-4 py-3 rounded-xl`} onClick={props.onCancel}>Cancel</button>}
                 <button className={`${props.isError ? "bg-red-700" : "bg-blue-400 dark:bg-blue-900"} hover:cursor-pointer ${props.isError ? "hover:bg-red-800" : "hover:bg-blue-600"} text-white m-2 px-4 py-3 rounded-xl`} onClick={props.onConfirm}>Confirm</button>
             </footer>

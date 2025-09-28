@@ -5,8 +5,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from "./pages/Home.jsx";
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
-import Hello from './pages/Hello.jsx';
 import RootLayout from './pages/RootLayout.jsx';
+import AuthLayout from './pages/AuthLayout.jsx'
 import ProductView from './pages/ProductView.jsx';
 import ProductAdd from './pages/ProductAdd.jsx';
 import NotFoundErrorPage from './pages/NotFoundError.jsx';
@@ -17,9 +17,10 @@ const router = createBrowserRouter([
     {path : "/products/add", element : <ProductAdd/>},
     {path : "/products/modify/:productID", element : <ProductAdd/>}
   ]},
-  { path: "/login", element: <Login/> },
-  { path: "/signup", element: <Signup/> },
-  { path: "/hello", element: <Hello/> },
+  {element : <AuthLayout/>, children : [
+    { path: "/login", element: <Login/> },
+    { path: "/signup", element: <Signup/> },
+  ]}
 ])
 
 function App() {
