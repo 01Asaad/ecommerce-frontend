@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import { UserProvider } from './context/UserProvider.jsx';
+import { ThemeProvider } from './context/ThemeProvider.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from "./pages/Home.jsx";
 import Login from './pages/Login.jsx';
@@ -11,36 +12,40 @@ import ProductView from './pages/ProductView.jsx';
 import ProductAdd from './pages/ProductAdd.jsx';
 import NotFoundErrorPage from './pages/NotFoundError.jsx';
 const router = createBrowserRouter([
-  {path : "/", element : <RootLayout/>, errorElement : <NotFoundErrorPage/>, children : [
-    { index : true, element: <Home/> },
-    {path : "/products/view/:productID", element : <ProductView/>},
-    {path : "/products/add", element : <ProductAdd/>},
-    {path : "/products/modify/:productID", element : <ProductAdd/>}
-  ]},
-  {element : <AuthLayout/>, children : [
-    { path: "/login", element: <Login/> },
-    { path: "/signup", element: <Signup/> },
-  ]}
+  {
+    path: "/", element: <RootLayout />, errorElement: <NotFoundErrorPage />, children: [
+      { index: true, element: <Home /> },
+      { path: "/products/view/:productID", element: <ProductView /> },
+      { path: "/products/add", element: <ProductAdd /> },
+      { path: "/products/modify/:productID", element: <ProductAdd /> }
+    ]
+  },
+  {
+    element: <AuthLayout />, children: [
+      { path: "/login", element: <Login /> },
+      { path: "/signup", element: <Signup /> },
+    ]
+  }
 ])
 
 function App() {
   const [isDark, setIsDark] = useState(false);
   const [themeLoaded, setThemeLoaded] = useState(false);
-  
+
   useEffect(() => {
     const theme = localStorage.theme;
-    const isDarkMode = theme === 'dark' || 
-      (!('theme' in localStorage) && 
-       window.matchMedia('(prefers-color-scheme: dark)').matches);
-    
+    const isDarkMode = theme === 'dark' ||
+      (!('theme' in localStorage) &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches);
+
     setIsDark(isDarkMode);
-    
+
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-    
+
     setThemeLoaded(true);
   }, []);
 
@@ -53,10 +58,12 @@ function App() {
   }
 
   return (
-     <div className='App'>
+    <div className='App'>
+      <ThemeProvider>
         <UserProvider>
           <RouterProvider router={router}></RouterProvider>
         </UserProvider>
+      </ThemeProvider>
     </div>
   )
 }
