@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useReducer } from 'react';
 import axios from 'axios';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link, useFetcher } from 'react-router-dom';
 import { useUser } from "../context/UserProvider"
 
 const validateInputs = (identifier, password) => {
@@ -10,91 +10,83 @@ const validateInputs = (identifier, password) => {
     return '';
 };
 
-function reducerAction(state, event) {
-    switch (event.type) {
-        case "EMAIL_CHANGE":
-            const emailIsValid = event.email
-            return { ...state, email: event.email, emailIsValid: emailIsValid, formIsValid: emailIsValid && state.passwordIsValid }
+export async function action({ request, params }) {
+    const formData = await request.formData();
+    const email = formData.get('email');
+    const password = formData.get('password');
+    
+    const currentError = validateInputs(email, password);
+    if (currentError) {
+        console.log("validation error: " + currentError);
+        return { error: currentError };
+    }
 
-        case "PASSWORD_CHANGE":
-            const passwordIsValid = event.password.length >= 8
-            return { ...state, password: event.password, passwordIsValid: passwordIsValid, formIsValid: state.emailIsValid && passwordIsValid }
-        default:
-            throw Error("unknown action")
-
+    try {
+        const response = await axios.post('http://localhost:3001/api/auth/login', { 
+            identifier: email, 
+            password: password 
+        });
+        return { user: response.data, success: true };
+    } catch (errorThrowback) {
+        console.error('Login failed:', errorThrowback.message);
+        return { 
+            error: errorThrowback.response?.data?.message || errorThrowback.message 
+        };
     }
 }
-
 export default function Login() {
     const navigateTo = useNavigate()
+    const fetcher = useFetcher()
     const [searchParams, setSearchParams] = useSearchParams()
-    const [formState, formDispatch] = useReducer(reducerAction, { email: "", emailIsValid: null, password: "", passwordIsValid: null, formIsValid: null })
-    const { isLoggedIn, user, setUser } = useUser()
+    const { isLoading, isLoggedIn, user, setUserInfo } = useUser()
     const [error, setError] = useState('');
+
     useEffect(() => {
-        if (isLoggedIn) {
+        if (fetcher.data?.success) {
+            setUserInfo(fetcher.data.user);
+            console.log("navigating to " + (searchParams.get("redirectedfrom") || "/"));
+            navigateTo(searchParams.get("redirectedfrom") || "/");
+        } else if (fetcher.data?.error) {
+            setError(fetcher.data.error);
+        }
+    }, [fetcher.data, setUserInfo, navigateTo, searchParams]);
+
+
+
+    
+    useEffect(() => {
+        if (!isLoading && isLoggedIn) {
             navigateTo("/")
         }
-    }, []) //this is only to redirect when user directly puts /login in path; if isLoggedIn is to be changed then the handleLogin function is responsible for redirecting.
+    }, [isLoading]) 
 
-    const handleLogin = async () => {
-        const currentError = validateInputs(formState.email, formState.password)
-        if (currentError) {
-            console.log("setting login error to " + currentError);
-
-            setError(currentError)
-            return
-        };
-
-        try {
-            const response = await axios.post('http://localhost:3001/api/auth/login', { identifier: formState.email, password: formState.password });
-            console.log('Login successful:', response.data);
-            setUser(response.data)
-            console.log("navigating to " + searchParams.get("redirectedfrom") || "/");
-
-            navigateTo(searchParams.get("redirectedfrom") || "/")
-        } catch (errorThrowback) {
-            console.log(errorThrowback);
-
-            console.error('Login failed:', errorThrowback.message);
-            setError(errorThrowback.message);
-        }
-    };
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        handleLogin();
-    };
-
+    const isSubmitting = fetcher.state === 'submitting'
     return (
         <div className='w-1/2 h-screen flex flex-col justify-center items-center'>
             <div className="text-blue-400 mb-10">
                 <h1 className='text-5xl text-center'>E-commerce</h1>
                 <p className='text-black dark:text-white text-center'>Let's trade</p>
             </div>
-            <form className="flex flex-col justify-center items-center w-full" onSubmit={handleSubmit}>
+            <fetcher.Form className="flex flex-col justify-center items-center w-full" method='post'>
                 <input
                     className="tinput"
                     type="text"
-                    // ref={identifierRef}
+                    name="email"
                     placeholder="Email or username"
-                    value={formState.email}
-                    onChange={(e) => formDispatch({ type: "EMAIL_CHANGE", email: e.target.value })}
                 />
                 <input
                     className="tinput"
                     type="password"
-                    // ref={passwordRef}
+                    name='password'
                     placeholder="Password"
-                    value={formState.password}
-                    onChange={(e) => formDispatch({ type: "PASSWORD_CHANGE", password: e.target.value })}
                 />
                 {error && <p className='text-red-600'>{error}</p>}
                 <button
-                    className="mt-10 w-full hover:cursor-pointer bg-blue-400 hover:bg-blue-700 text-white transition duration-100 rounded-md p-3 m-4"
+                    className={`mt-10 w-full disabled:cursor-default hover:cursor-pointer bg-blue-400 ${isSubmitting ? "" : "hover:bg-blue-700"} text-white transition duration-100 rounded-md p-3 m-4`}
                     type="submit"
+                    disabled={isSubmitting}
                 >
-                    Login
+                    {isSubmitting ? 'Logging in...' : 'Login'}
                 </button>
                 <a className="self-start text-blue-700 hover:text-blue-300 dark:hover:text-white" href='/reset-password'>Recover password</a>
                 <button className="hover:cursor-pointer mt-10 w-full border border-gray-300 hover:border-blue-400 transition duration-100 text-gray-400 rounded-md p-3 m-4 flex justify-center items-center relative">
@@ -106,7 +98,7 @@ export default function Login() {
                     </svg>
                     <span className="text-center w-full">Sign in with Google</span>
                 </button>
-            </form>
+            </fetcher.Form>
             <div className='absolute bottom-0 mb-2'>
                 <label className='text-gray-400 text-center'>Don't have an account yet? </label>
                 <Link className=" text-blue-700 hover:text-blue-300 dark:hover:text-white" to='/signup'>Sign Up</Link>

@@ -7,9 +7,6 @@ const ThemeContext = createContext({
 })
 
 
-function getCurrentActiveTheme(currentTheme) {
-    return currentTheme=== 'dark' || currentTheme=== 'light' ? currentTheme : window.matchMedia('(prefers-color-scheme: dark)').matches
-}
 export const ThemeProvider = ({ children }) => {
 
     const [currentTheme, setCurrentTheme] = useState(() => {
@@ -59,7 +56,7 @@ export const ThemeProvider = ({ children }) => {
 
     const value = {
         currentThemeChoice : currentTheme,
-        currentActiveThme : getCurrentActiveTheme(currentTheme),
+        currentActiveThme : (currentTheme=== 'dark' || currentTheme=== 'light' ? currentTheme : window.matchMedia('(prefers-color-scheme: dark)').matches),
         setTheme : setCurrentTheme
     }
 

@@ -10,8 +10,11 @@ export default function GlobalNavBar() {
     const [isLogoutModalActive, setIsLogoutModalActive] = useState(false)
     const userCtx = useUser()
     const navigateTo = useNavigate()
+    console.log("isloggedin" + userCtx.isLoggedIn);
+    console.log("isloading" + userCtx.isLoading);
+    
     function logoutConfirmHandle() {
-        userCtx.setUser({
+        userCtx.setUserInfo({
                 email: '',
                 firstName: '',
                 lastName: '',

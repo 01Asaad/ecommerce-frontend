@@ -1,100 +1,110 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useFetcher } from 'react-router-dom';
 import { useUser } from '../context/UserProvider';
+
+function validateInputs(email, password, username, firstName, lastName) {
+    if (!email || !password || !username || !firstName || !lastName) {
+        return "Please fill all fields."
+    }
+    if (password.length < 6) {
+        return "password should be 6 characters or more."
+    }
+    return ""
+}
+
+export async function action({ request, params }) {
+    let formData = await request.formData();
+    formData = {
+        email : formData.get("email"),
+        password : formData.get("password"),
+        username : formData.get("username"),
+        firstName : formData.get("firstName"),
+        lastName : formData.get("lastName"),
+    }
+    const error = validateInputs(formData.email, formData.password, formData.username, formData.firstName, formData.lastName)
+    if (error) {
+        return {error}
+    }
+
+    try {
+        const response = await axios.post('http://localhost:3001/api/auth/signup', formData);
+        return {success : true, resData : response.data}
+    } catch (error) {
+        return {error : error}
+    }
+
+}
 
 export default function Signup() {
     const navigateTo = useNavigate()
-    const [email, setEmail] = useState('');
-    const [username, setUsername] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const { isLoggedIn, user, setUser } = useUser()
+    const fetcher = useFetcher()
+    const [error, setError] = useState("")
+    const { isLoading, isLoggedIn, user, setUserInfo } = useUser()
 
-    if (isLoggedIn) {
-        navigateTo("/")
-    }
+    useEffect(() => {
+            if (!isLoading && isLoggedIn) {
+                navigateTo("/")
+            }
+        }, [isLoading])
 
-    const validateInputs = () => {
-        if (!email || !password || !username || !firstName || !lastName) {
-            setError('Please fill all fields.');
-            return false;
-        }
-        setError('');
-        return true;
-    };
-    const handleSignup = async () => {
-        if (!validateInputs()) return;
-
-        try {
-            const response = await axios.post('http://localhost:3001/api/auth/signup', { email, password, username, firstName, lastName });
-            console.log('Signup successful:', response.data);
-            setUser(response.data.userInfo)
+    useEffect(() => {
+        if (fetcher.data?.success) {
+            console.log(fetcher.data);
+            
+            setUserInfo(fetcher.data.resData.userInfo)
             navigateTo("/")
-
-        } catch (error) {
-            console.error('Signup failed:', error);
-            setError(error.response.data.message);
+        } else {
+            setError(fetcher.data?.error ? fetcher.data.error : "")
         }
-    };
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        handleSignup();
-    };
-
+    })
+    const isSubmitting = fetcher.state === "submitting"
     return (
         <div className='w-1/2 h-screen flex flex-col justify-center items-center'>
             <div className="text-blue-400 mb-10">
                 <h1 className='text-5xl text-center'>E-commerce</h1>
                 <p className='text-black dark:text-white text-center'>Let's trade</p>
             </div>
-            <form className="flex flex-col justify-center items-center w-full" onSubmit={handleSubmit}>
+            <fetcher.Form className="flex flex-col justify-center items-center w-full" method="post">
                 <input
                     className="tinput"
                     type="text"
                     placeholder="First Name"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    name="firstName"
                 />
                 <input
                     className="tinput"
                     type="text"
                     placeholder="Last Name"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    name="lastName"
                 />
                 <input
                     className="tinput"
                     type="email"
                     placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    name="email"
                 />
                 <input
                     className="tinput"
                     type="text"
+                    name="username"
                     placeholder="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
                 />
                 <input
                     className="tinput"
                     type="password"
                     placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    name="password"
                 />
                 {error && <p className='text-red-600'>{error}</p>}
                 <button
-                    className="mt-10 w-full bg-blue-400 transition duration-100 hover:bg-blue-700 text-white rounded-md p-3 m-4"
+                    className={`mt-10 w-full disabled:cursor-default hover:cursor-pointer bg-blue-400 ${isSubmitting ? "" : "hover:bg-blue-700"} text-white transition duration-100 rounded-md p-3 m-4`}
                     type="submit"
+                    disabled={isSubmitting}
                 >
-                    Signup
+                    {isSubmitting? 'Creating user...' : 'Signup'}
                 </button>
-            </form>
+            </fetcher.Form>
             <div className='absolute bottom-0 mb-2'>
                 <label className='text-gray-400 text-center'>Already have an account? </label>
                 <Link className=" text-blue-700 hover:text-blue-300 dark:hover:text-white" to='/login'>Login</Link>
