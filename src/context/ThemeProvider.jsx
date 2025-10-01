@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext } from "react"
+import { createContext, useState, useEffect, useContext, useMemo } from "react"
 
 const ThemeContext = createContext({
     currentThemeChoice: '',
@@ -48,17 +48,32 @@ export const ThemeProvider = ({ children }) => {
         };
 
         mediaQuery.addEventListener('change', handleChange);
-        
+
         return () => {
             mediaQuery.removeEventListener('change', handleChange);
         };
     }, [currentTheme]);
 
-    const value = {
-        currentThemeChoice : currentTheme,
-        currentActiveThme : (currentTheme=== 'dark' || currentTheme=== 'light' ? currentTheme : window.matchMedia('(prefers-color-scheme: dark)').matches),
-        setTheme : setCurrentTheme
-    }
+    
+    useEffect(() => {
+        const theme = localStorage.theme;
+        const isDarkMode = theme === 'dark' ||
+        (!('theme' in localStorage) &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches);
+        
+        
+        if (isDarkMode) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        
+    }, []);
+    const value = useMemo(() => ({
+        currentThemeChoice: currentTheme,
+        currentActiveTheme: (currentTheme === 'dark' || currentTheme === 'light' ? currentTheme : (window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light")),
+        setTheme: setCurrentTheme
+    }), [currentTheme])
 
     return (
         <ThemeContext.Provider value={value}>
