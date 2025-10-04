@@ -43,7 +43,6 @@ export async function action({ request, params }) {
     const response = await axios.post(url, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        "Content-Type" : "image/jpeg",
         "Authorization": "Bearer " + getToken()
       }
     });
@@ -70,12 +69,17 @@ export default function ProductAdd() {
     image: null
   });
   useEffect(() => {
-    if (fetcher.data?.success) {
-      navigateTo("/")
-    } else if (fetcher.data?.error) {
-      setError(fetcher.data.error);
-    }
-  }, [fetcher.data?.error !== error, fetcher.data?.success])
+    if (fetcher.state === "idle") {
+      if (fetcher.data?.success) {
+        navigateTo("/")
+      } else if (fetcher.data?.error) {
+        
+        setError(fetcher.data.error?.response?.data?.message || fetcher.data.error?.message);
+      }
+    } 
+
+  }, [fetcher.state])
+  
 
   useEffect(() => {
     if (location?.state?.productInfo) {
