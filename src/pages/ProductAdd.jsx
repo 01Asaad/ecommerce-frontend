@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useUser } from '../context/UserProvider';
 import { useFetcher, useLocation, useNavigate } from 'react-router-dom';
 import PopupModal from '../components/PopupModal';
-import {getToken} from "../utils/helpers"
+import { getToken } from "../utils/helpers"
 
 function validateFormInputs(name, price, stock, image) {
   if (!name || !price || !stock) {
@@ -29,11 +29,11 @@ export async function action({ request, params }) {
     stock: formData.get("stock"),
     image: formData.get("image")
   };
-  
+
   const urlObj = new URL(request.url);
   const pathSegments = urlObj.pathname.split('/').filter(Boolean);
   const productID = pathSegments[pathSegments.length - 1] === "add" ? "" : pathSegments[pathSegments.length - 1]
-  
+
   const error = validateFormInputs(data.name, data.price, data.stock, data.image)
   if (error) {
     return { error: error }
@@ -73,13 +73,13 @@ export default function ProductAdd() {
       if (fetcher.data?.success) {
         navigateTo("/")
       } else if (fetcher.data?.error) {
-        
+
         setError(fetcher.data.error?.response?.data?.message || fetcher.data.error?.message);
       }
-    } 
+    }
 
   }, [fetcher.state])
-  
+
 
   useEffect(() => {
     if (location?.state?.productInfo) {
@@ -99,7 +99,7 @@ export default function ProductAdd() {
       })
       setIsEditing('')
     }
-  }, [location?.state?.productInfo?._id])
+  }, [location.state?.productInfo?._id])
 
   useEffect(() => {
     if (!userCtx.isLoading && !userCtx.isLoggedIn) {
@@ -115,14 +115,14 @@ export default function ProductAdd() {
     }));
   };
 
-
+  const isIdle = fetcher.state === "idle"
   return (
     <>
       {error && <PopupModal title="Error" content={error} onConfirm={() => { setError('') }} onIgnore={() => { setError('') }}></PopupModal>}
       {!isEditing && <h1 className='mt-14 mb-2 mx-6 text-lg'>Add a New Product</h1>}
-      {isEditing && <h1 className='mt-14 mb-2 mx-6 text-lg'>Edit Product</h1>}
-      {isEditing && <h2 className='mb-2 mx-6 text-sm'>{isEditing}</h2>}
-      <div className='flex justify-center items-center mx-5 border-2 rounded-2xl h-full p-2 border-gray-600'>
+      {isEditing && <h1 className='mt-14 mb-0 mx-6 text-lg'>Edit Product</h1>}
+      {isEditing && <h2 className='mb-2 mx-6 text-sm text-cyan-950'>#{isEditing}</h2>}
+      <div className='flex justify-center items-center mt-2 mx-5 rounded-2xl h-full p-2 border-gray-600'>
         <fetcher.Form method='post' encType="multipart/form-data" className='flex flex-col'>
           <div className='my-1 flex flex-col'>
             <label>Product Name</label>
@@ -161,7 +161,11 @@ export default function ProductAdd() {
           </div>
           <div className='flex justify-end'>
 
-            <button type="submit" className='rounded-lg hover:cursor-pointer bg-indigo-500 w-24 py-2 mt-4'>{isEditing ? "Edit" : "Create"}</button>
+            <button
+              type="submit"
+              className={`rounded-lg  ${isIdle ? "bg-indigo-500 hover:cursor-pointer" : "bg-blue-300"} w-24 py-2 mt-4`}
+              disabled={!isIdle}
+            >{isEditing ? "Edit" : "Create"}</button>
           </div>
         </fetcher.Form>
       </div>
