@@ -52,7 +52,7 @@ export default function ProductView() {
     }
     async function deletionConfirmationHandler() {
         try {
-            await axios.post(`http://localhost:3001/api/products/delete-product/${productID}`, {}, {
+            await axios.post(import.meta.env.VITE_API_URL+`api/products/delete-product/${productID}`, {}, {
                 headers: {
                     "Authorization": "Bearer " + userCtx.user.token
                 }
@@ -68,7 +68,7 @@ export default function ProductView() {
     useEffect(() => {
         const doo = async () => {
             try {
-                const response = await axios.get(`http://localhost:3001/api/products/get-product/${productID}`)
+                const response = await axios.get(import.meta.env.VITE_API_URL + `api/products/get-product/${productID}`)
                 setProductInfo(response.data)
             } catch (error) {
                 setCurrentActiveModal("error:" + error.message)
@@ -91,7 +91,7 @@ export default function ProductView() {
                     <div className="mt-5 pl-5 flex h-96 w-full justify-start items-center space-x-5">
                         <img
                             alt={productInfo.imageAlt}
-                            src={productInfo.image ? "http://localhost:3001/" + productInfo.image : TEMPLATEIMAGES[0]}
+                            src={productInfo.image ? import.meta.env.VITE_API_URL + productInfo.image : TEMPLATEIMAGES[0]}
                             className="aspect-square w-[20%] rounded-lg bg-gray-200 dark:bg-gray-800 object-cover group-hover:opacity-75 xl:aspect-7/8"
                         />
                         <div className=" ml-5 flex flex-col  justify-between h-full">

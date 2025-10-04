@@ -38,7 +38,7 @@ export async function action({ request, params }) {
   if (error) {
     return { error: error }
   }
-  const url = productID ? 'http://localhost:3001/api/products/edit-product/' + productID : 'http://localhost:3001/api/products/add-product'
+  const url = import.meta.env.VITE_API_URL + (productID ? 'api/products/edit-product/' + productID : 'api/products/add-product')
   try {
     const response = await axios.post(url, formData, {
       headers: {
@@ -151,7 +151,6 @@ export default function ProductAdd() {
             <label>Image</label>
             <input
               type="file"
-              // value={formData.image ? formData.image : ""}
               name="image"
               className="block w-full text-sm text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-violet-50 dark:file:bg-gray-900 file:px-5 file:py-2 file:text-sm file:text-violet-500 dark:file:text-violet-800 hover:file:cursor-pointer rounded-lg p-1.5 placeholder:text-gray-500 hover:cursor-pointer outline-1 -outline-offset-1 dark:outline-white/10 outline-black/25 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500"
               onChange={handleChange} />

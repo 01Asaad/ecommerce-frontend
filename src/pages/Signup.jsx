@@ -28,7 +28,7 @@ export async function action({ request, params }) {
     }
 
     try {
-        const response = await axios.post('http://localhost:3001/api/auth/signup', formData);
+        const response = await axios.post(import.meta.env.VITE_API_URL + 'api/auth/signup', formData);
         return {success : true, resData : response.data}
     } catch (error) {
         return {error : error}

@@ -33,7 +33,7 @@ export const UserProvider = ({ children }) => {
     console.log("calling fetch func");
     
     try {
-      const response = await fetch('http://localhost:3001/api/auth/user', {
+      const response = await fetch(import.meta.env.VITE_API_URL + 'api/auth/user', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`

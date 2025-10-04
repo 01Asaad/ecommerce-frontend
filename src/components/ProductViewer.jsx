@@ -19,7 +19,7 @@ const ProductViewer = ({ userID }) => {
       setIsLoading(true);
       console.log("getting prods");
       try {
-        const url = `http://localhost:3001/api/products/get-products${userID ? "/" + userID : ""}?sortBy=${sortCriteria}&order=${sortOrder}`;
+        const url = import.meta.env.VITE_API_URL + `api/products/get-products${userID ? "/" + userID : ""}?sortBy=${sortCriteria}&order=${sortOrder}`;
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);

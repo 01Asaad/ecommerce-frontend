@@ -25,7 +25,7 @@ export default function ProductList({ products, loading }) {
             <Link key={product._id} to={loading ? "#" : `/products/view/${product._id}`} className="group">
               {product.image === "blank" ? <div className="aspect-square w-full rounded-lg bg-gray-200 dark:bg-gray-800 object-cover group-hover:opacity-75 xl:aspect-7/8"/> : <img
                 alt={product.imageAlt}
-                src={product.image ? "http://localhost:3001/" + product.image : TEMPLATEIMAGES[index % 8]}
+                src={product.image ? import.meta.env.VITE_API_URL + product.image : TEMPLATEIMAGES[index % 8]}
                 className="aspect-square w-full rounded-lg bg-gray-200 dark:bg-gray-800 object-cover group-hover:opacity-75 xl:aspect-7/8"
               />}
               <h3 className="mt-4 text-sm text-gray-700 dark:text-gray-300">{product.name}</h3>
