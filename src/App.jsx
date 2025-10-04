@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import { UserProvider } from './context/UserProvider.jsx';
-import { ThemeProvider, useTheme } from './context/ThemeProvider.jsx'
+import { ThemeProvider } from './context/ThemeProvider.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from "./pages/Home.jsx";
 import Login, {action as LoginAction} from './pages/Login.jsx';

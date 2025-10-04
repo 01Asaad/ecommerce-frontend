@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from "../context/UserProvider";
+import { TEMPLATEIMAGES } from "../constants/index"
 import PopupModal from "../components/PopupModal";
 import axios from "axios";
 
@@ -90,7 +91,7 @@ export default function ProductView() {
                     <div className="mt-5 pl-5 flex h-96 w-full justify-start items-center space-x-5">
                         <img
                             alt={productInfo.imageAlt}
-                            src={productInfo.imageSrc}
+                            src={productInfo.image ? "http://localhost:3001/" + productInfo.image : TEMPLATEIMAGES[0]}
                             className="aspect-square w-[20%] rounded-lg bg-gray-200 dark:bg-gray-800 object-cover group-hover:opacity-75 xl:aspect-7/8"
                         />
                         <div className=" ml-5 flex flex-col  justify-between h-full">
