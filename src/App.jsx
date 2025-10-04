@@ -21,7 +21,7 @@ const router = createBrowserRouter([
     ]
   },
   {
-    element: <AuthLayout />, children: [
+    element: <AuthLayout />, errorElement: <NotFoundErrorPage />, children: [
       { path: "/login", element: <Login />, action : LoginAction },
       { path: "/signup", element: <Signup />, action : SignupAction },
     ]
