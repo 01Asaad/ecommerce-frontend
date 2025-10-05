@@ -1,25 +1,27 @@
 import React, { useState } from "react";
-import { useNavigate, NavLink } from 'react-router-dom';
+import { useNavigate, NavLink, useNavigation, useLocation } from 'react-router-dom';
 import DarkThemeManage from "./DarkThemeManage"
-import {useUser} from "../context/UserProvider"
+import { useUser } from "../context/UserProvider"
 import PopupModal from "./PopupModal"
 function addIfActive(fixedClasses, activeClasses, inactiveClasses = "") {
-    return ({isActive}) => (fixedClasses + (isActive? (" "+activeClasses) : (" "+inactiveClasses)))
+    return ({ isActive }) => (fixedClasses + (isActive ? (" " + activeClasses) : (" " + inactiveClasses)))
 }
 export default function GlobalNavBar() {
     const [isLogoutModalActive, setIsLogoutModalActive] = useState(false)
     const userCtx = useUser()
+    const [searchValue, setSearchValue] = useState("")
     const navigateTo = useNavigate()
+    const location = useLocation()
     function logoutConfirmHandle() {
         userCtx.setUserInfo({
-                email: '',
-                firstName: '',
-                lastName: '',
-                username: "",
-                token: ''
-            })
+            email: '',
+            firstName: '',
+            lastName: '',
+            username: "",
+            token: ''
+        })
         setIsLogoutModalActive(false)
-        
+
     }
     function logoutCancelHandle() {
         setIsLogoutModalActive(false)
@@ -31,15 +33,37 @@ export default function GlobalNavBar() {
             navigateTo("/login");
         }
     }
+    function handleSearchClick() {
+        navigateTo("/products", {state : {from : location.pathname, keyword : searchValue}})
+    }
+    function searchValueChangeHandler(e) {
+        setSearchValue(e.target.value)
+    }
+    const isSearchBarShown = !["/products", "/products/"].includes(location.pathname)
+
+
+    const searchBar = (<div className="space-x-2">
+        <span className="sr-only">navbar search</span>
+        <input
+            className="w-2xl bg-white dark:bg-gray-200 text-black caret-gray-300 placeholder:text-gray-500 p-2 rounded-sm"
+            name="search"
+            type="text"
+            placeholder="search products"
+            value={searchValue}
+            onChange={searchValueChangeHandler}
+        ></input>
+        <button onClick={handleSearchClick} className="bg-blue-400 hover:bg-blue-600 dark:bg-indigo-800 hover:dark:bg-indigo-700 text-white p-2 hover:cursor-pointer rounded-sm ">Search</button>
+    </div>)
     return (
         <div className="h-20 w-full top-0 bg-blue-500 dark:bg-gradient-to-l dark:from-gray-800 dark:to-blue-600 flex justify-between items-center mb-2">
             <div>
                 <h1 className="ml-4 select-none text-3xl text-white">e-commerce</h1>
             </div>
-            <div className="mx-5"> 
+            <div className="mx-5">
                 <NavLink to="/" className={addIfActive("mx-2 hover:text-black dark:hover:text-gray-500", "text-red-500", "text-white")}>Main</NavLink>
-                <NavLink className={addIfActive("mx-2 hover:text-black dark:hover:text-gray-500", "text-red-500", "text-white")} to="/products/">Products</NavLink>
+                <NavLink className={addIfActive("mx-2 hover:text-black dark:hover:text-gray-500", "text-red-500", "text-white")} to="/products">Products</NavLink>
             </div>
+            {isSearchBarShown && searchBar}
             <div className="mr-2 flex justify-end items-center gap-x-2">
                 <DarkThemeManage></DarkThemeManage>
                 {isLogoutModalActive && <PopupModal title="Logout" content="Are you sure you want to logout?" isCancelleable onConfirm={logoutConfirmHandle} onCancel={logoutCancelHandle} onIgnore={logoutCancelHandle} ></PopupModal>}
