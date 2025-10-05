@@ -30,7 +30,6 @@ export const UserProvider = ({ children }) => {
   });
   const { isLoggedIn, isLoading, userInfo: user } = authData
   const fetchUserData = async (token) => {
-    console.log("calling fetch func");
     
     try {
       const response = await fetch(import.meta.env.VITE_API_URL + 'api/auth/user', {

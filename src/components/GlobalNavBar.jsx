@@ -3,16 +3,13 @@ import { useNavigate, NavLink } from 'react-router-dom';
 import DarkThemeManage from "./DarkThemeManage"
 import {useUser} from "../context/UserProvider"
 import PopupModal from "./PopupModal"
-function addIfActive(fixedClasses, activeClass) {
-    return ({isActive}) => (fixedClasses + (isActive? (" "+activeClass) : ""))
+function addIfActive(fixedClasses, activeClasses, inactiveClasses = "") {
+    return ({isActive}) => (fixedClasses + (isActive? (" "+activeClasses) : (" "+inactiveClasses)))
 }
 export default function GlobalNavBar() {
     const [isLogoutModalActive, setIsLogoutModalActive] = useState(false)
     const userCtx = useUser()
     const navigateTo = useNavigate()
-    console.log("isloggedin" + userCtx.isLoggedIn);
-    console.log("isloading" + userCtx.isLoading);
-    
     function logoutConfirmHandle() {
         userCtx.setUserInfo({
                 email: '',
@@ -40,8 +37,8 @@ export default function GlobalNavBar() {
                 <h1 className="ml-4 select-none text-3xl text-white">e-commerce</h1>
             </div>
             <div className="mx-5"> 
-                <NavLink to="/" className={addIfActive("mx-2 hover:text-gray-500", "text-red-500")}>Main</NavLink>
-                <NavLink className={addIfActive("mx-2 hover:text-gray-500", "text-red-500")} to="/products/">Products</NavLink>
+                <NavLink to="/" className={addIfActive("mx-2 hover:text-black dark:hover:text-gray-500", "text-red-500", "text-white")}>Main</NavLink>
+                <NavLink className={addIfActive("mx-2 hover:text-black dark:hover:text-gray-500", "text-red-500", "text-white")} to="/products/">Products</NavLink>
             </div>
             <div className="mr-2 flex justify-end items-center gap-x-2">
                 <DarkThemeManage></DarkThemeManage>
