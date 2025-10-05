@@ -71,7 +71,7 @@ export default function ProductAdd() {
   useEffect(() => {
     if (fetcher.state === "idle") {
       if (fetcher.data?.success) {
-        navigateTo("/")
+        navigateTo("/products")
       } else if (fetcher.data?.error) {
 
         setError(fetcher.data.error?.response?.data?.message || fetcher.data.error?.message);
@@ -156,14 +156,15 @@ export default function ProductAdd() {
             <input
               type="file"
               name="image"
-              className="block w-full text-sm text-slate-500 file:mr-4 file:rounded-full file:border-0 file:bg-violet-50 dark:file:bg-gray-900 file:px-5 file:py-2 file:text-sm file:text-violet-500 dark:file:text-violet-800 hover:file:cursor-pointer rounded-lg p-1.5 placeholder:text-gray-500 hover:cursor-pointer outline-1 -outline-offset-1 dark:outline-white/10 outline-black/25 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500"
+              className="block w-full file:w-full text-sm text-slate-500 file:border-0 file:bg-violet-50 dark:file:bg-gray-900 file:px-5 file:py-2 file:text-sm file:text-violet-500 dark:file:text-violet-800 hover:file:cursor-pointer rounded-lg file:rounded-lg placeholder:text-gray-500 hover:cursor-pointer outline-1 -outline-offset-1 dark:outline-white/10 outline-black/25 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500"
               onChange={handleChange} />
+              <span className='ml-1 text-sm text-gray-400'>{formData.image?.name || ""}</span>
           </div>
           <div className='flex justify-end'>
 
             <button
               type="submit"
-              className={`rounded-lg  ${isIdle ? "bg-indigo-500 hover:cursor-pointer" : "bg-blue-300"} w-24 py-2 mt-4`}
+              className={`rounded-lg ${isIdle ? "bg-indigo-500 hover:cursor-pointer" : "bg-blue-300"} w-24 py-2 mt-4`}
               disabled={!isIdle}
             >{isEditing ? "Edit" : "Create"}</button>
           </div>
