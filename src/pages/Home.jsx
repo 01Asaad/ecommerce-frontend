@@ -3,10 +3,13 @@ import ProductViewer from "../components/ProductViewer.jsx";
 
 export default function Home() {
     return (
-        <div className="">
-            <ProductViewer>
+        <>
+            <div className="">
+                <ProductViewer maxProducts={8} isShowAllProductsButtonShown={true}>
 
-            </ProductViewer>
-        </div>
+                </ProductViewer>
+                
+            </div>
+        </>
     )
 }

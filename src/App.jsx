@@ -11,10 +11,12 @@ import AuthLayout from './pages/AuthLayout.jsx'
 import ProductView from './pages/ProductView.jsx';
 import ProductAdd, {action as productAddAction} from './pages/ProductAdd.jsx';
 import NotFoundErrorPage from './pages/NotFoundError.jsx';
+import ProductsView from './pages/ProductsView.jsx';
 const router = createBrowserRouter([
   {
     path: "/", element: <RootLayout />, errorElement: <NotFoundErrorPage />, children: [
       { index: true, element: <Home /> },
+      { path: "/products/", element: <ProductsView /> },
       { path: "/products/view/:productID", element: <ProductView /> },
       { path: "/products/add", element: <ProductAdd />, action:productAddAction },
       { path: "/products/modify/:productID", element: <ProductAdd />, action : productAddAction },

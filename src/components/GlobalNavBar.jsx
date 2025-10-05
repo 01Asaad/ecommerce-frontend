@@ -41,7 +41,7 @@ export default function GlobalNavBar() {
             </div>
             <div className="mx-5"> 
                 <NavLink to="/" className={addIfActive("mx-2 hover:text-gray-500", "text-red-500")}>Main</NavLink>
-                <NavLink className={addIfActive("mx-2 hover:text-gray-500", "text-red-500")} to="/products/add">Add-Product</NavLink>
+                <NavLink className={addIfActive("mx-2 hover:text-gray-500", "text-red-500")} to="/products/">Products</NavLink>
             </div>
             <div className="mr-2 flex justify-end items-center gap-x-2">
                 <DarkThemeManage></DarkThemeManage>
