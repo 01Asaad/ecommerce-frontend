@@ -3,7 +3,7 @@ import { useNavigate, NavLink, useLocation } from 'react-router-dom';
 import DarkThemeManage from "./DarkThemeManage"
 import { useUser } from "../context/UserProvider"
 import PopupModal from "./PopupModal"
-import useTWBreakpoint from "../hooks/useTWBreakpoints"
+import useTWBreakpoint, {doesWidthReach} from "../hooks/useTWBreakpoints"
 function addIfActive(fixedClasses, activeClasses, inactiveClasses = "") {
     return ({ isActive }) => (fixedClasses + (isActive ? (" " + activeClasses) : (" " + inactiveClasses)))
 }
@@ -67,7 +67,7 @@ export default function GlobalNavBar() {
                     <NavLink to="/" className={addIfActive("mx-1 lg:mx-2 text-sm lg:text-base hover:text-black dark:hover:text-gray-500", "text-red-500", "text-white")}>Main</NavLink>
                     <NavLink to="/products" className={addIfActive("mx-1 lg:mx-2 text-sm lg:text-base hover:text-black dark:hover:text-gray-500", "text-red-500", "text-white")}>Products</NavLink>
                 </div>
-                {isSearchBarShown && breakpoint !== "lg" && searchBar}
+                {isSearchBarShown && doesWidthReach("lg") && searchBar}
                 <div className="mr-2 flex justify-end items-center gap-x-2">
                     <DarkThemeManage></DarkThemeManage>
                     {isLogoutModalActive && <PopupModal title="Logout" content="Are you sure you want to logout?" isCancelleable onConfirm={logoutConfirmHandle} onCancel={logoutCancelHandle} onIgnore={logoutCancelHandle} ></PopupModal>}
@@ -79,7 +79,7 @@ export default function GlobalNavBar() {
                     </button>
                 </div>
             </div >
-            {isSearchBarShown && breakpoint === "xs" && searchBar}
+            {isSearchBarShown && !doesWidthReach("lg") && searchBar}
         </>
     )
 }
