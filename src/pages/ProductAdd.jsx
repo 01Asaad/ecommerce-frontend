@@ -118,7 +118,7 @@ export default function ProductAdd() {
   const isIdle = fetcher.state === "idle"
   return (
     <>
-      {error && <PopupModal title="Error" content={error} onConfirm={() => { setError('') }} onIgnore={() => { setError('') }}></PopupModal>}
+      {error && <PopupModal title="Failed creating product" isError content={error} onConfirm={() => { setError('') }} onIgnore={() => { setError('') }}></PopupModal>}
       {!isEditing && <h1 className='mt-14 mb-2 mx-6 text-lg'>Add a New Product</h1>}
       {isEditing && <h1 className='mt-14 mb-0 mx-6 text-lg'>Edit Product</h1>}
       {isEditing && <h2 className='mb-2 mx-6 text-sm text-cyan-950'>#{isEditing}</h2>}

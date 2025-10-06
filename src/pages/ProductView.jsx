@@ -4,6 +4,7 @@ import { useUser } from "../context/UserProvider";
 import { TEMPLATEIMAGES } from "../constants/index"
 import PopupModal from "../components/PopupModal";
 import axios from "axios";
+import useTWBreakpoints from "../hooks/useTWBreakpoints";
 
 function formatDateWithTimezone(dateString, timezoneOffset = 0) {
     const date = new Date(dateString);
@@ -13,12 +14,13 @@ function formatDateWithTimezone(dateString, timezoneOffset = 0) {
     const year = targetDate.getUTCFullYear();
     const hours = String(targetDate.getUTCHours()).padStart(2, '0');
     const minutes = String(targetDate.getUTCMinutes()).padStart(2, '0');
-
+    
     return `${day}-${month}-${year} ${hours}:${minutes}UTC`;
 }
 
 
 export default function ProductView() {
+    const bp = useTWBreakpoints()
     const [currentActiveModal, setCurrentActiveModal] = useState(null)
     const { productID } = useParams();
     const userCtx = useUser()
@@ -40,7 +42,7 @@ export default function ProductView() {
     })
 
     function deletionResolveHandler() {
-        navigateTo("/")
+        navigateTo("/products")
     }
     function productEdithandler() {
         navigateTo("/products/modify/" + productID, { state: { from: "/products/view/" + productID, productInfo: productInfo } })
@@ -76,34 +78,34 @@ export default function ProductView() {
         doo()
 
     }, [productID])
-    const imageEl = productInfo.image === "blank" ? <div className="aspect-square w-[20%] rounded-lg bg-gray-200 dark:bg-gray-800 object-cover group-hover:opacity-75 xl:aspect-7/8" /> : <img
+    const imageEl = productInfo.image === "blank" ? <div className="aspect-square w-[50%] sm:w-[20%] rounded-lg bg-gray-200 dark:bg-gray-800 object-cover group-hover:opacity-75 xl:aspect-7/8" /> : <img
         alt={productInfo.imageAlt}
         src={productInfo.image ? import.meta.env.VITE_API_URL + productInfo.image : TEMPLATEIMAGES[0]}
-        className="aspect-square w-[20%] rounded-lg bg-gray-200 dark:bg-gray-800 object-cover group-hover:opacity-75 xl:aspect-7/8"
+        className="aspect-square w-[50%] sm:w-[20%] rounded-lg bg-gray-200 dark:bg-gray-800 object-cover group-hover:opacity-75 xl:aspect-7/8"
     />
 
     return (
         <div className="flex flex-col justify-center  w-full">
-            {currentActiveModal === "deletionConfirmation" && <PopupModal title="Product Deletion" content={`Are you sure you want to delete product ${productInfo.name}?`} onConfirm={deletionConfirmationHandler} isCancelleable onCancel={confirmationCancellationHandler} onIgnore={confirmationCancellationHandler} />}
+            {currentActiveModal === "deletionConfirmation" && <PopupModal isError title="Product Deletion" content={`Are you sure you want to delete product ${productInfo.name}? This action can't be undone.`} onConfirm={deletionConfirmationHandler} isCancelleable onCancel={confirmationCancellationHandler} onIgnore={confirmationCancellationHandler} />}
             {currentActiveModal === "deletionResolve" && <PopupModal title="Product deleted" content={`${productInfo.name}  was deleted successfully`} onConfirm={deletionResolveHandler} onIgnore={deletionResolveHandler} />}
             {/* {(isLoading) && (<h1 className="mt-10 text-center text-4xl">Loading product</h1>)} */}
             {(!productInfo.name && !isLoading) && (<h1>Not Found</h1>)}
             {(
                 <>
-                    <div className="mt-5 pl-5 flex h-96 w-full justify-start items-center space-x-5">
+                    <div className="mt-5 pl-5 flex flex-col sm:flex-row h-96 w-full justify-center sm:justify-start items-center sm:space-x-5">
                         {imageEl}
-                        <div className=" ml-5 flex flex-col justify-between h-full">
+                        <div className="ml-5 flex flex-col justify-between items-center sm:items-start h-full">
                             <div className="flex-2">
-                                <h3 className="mt-7 text-3xl text-gray-700 dark:text-gray-300">{productInfo.name}</h3>
+                                <h3 className="mt-7 text-3xl text-gray-700 text-center sm:text-left dark:text-gray-300">{productInfo.name}</h3>
                             </div>
                             <div className="flex-3">
-                                <p className="mt-1 text-md font-medium text-gray-900 dark:text-gray-400"> supplier : {productInfo.providerName}</p>
-                                <p className="mt-1 text-md font-medium text-gray-900 dark:text-gray-400"> price : ${productInfo.price}</p>
-                                <p className="mt-1 text-md font-medium text-gray-900 dark:text-gray-400"> stock : {productInfo.stock}</p>
+                                <p className="mt-1 text-md font-medium text-gray-900 text-center sm:text-left dark:text-gray-400"> supplier : {productInfo.providerName}</p>
+                                <p className="mt-1 text-md font-medium text-gray-900 text-center sm:text-left dark:text-gray-400"> price : ${productInfo.price}</p>
+                                <p className="mt-1 text-md font-medium text-gray-900 text-center sm:text-left dark:text-gray-400"> stock : {productInfo.stock}</p>
                             </div>
-                            <div className="flex-1 flex flex-col justify-end pb-5">
-                                <span>Creation date : {formatDateWithTimezone(productInfo.createdAt)}</span>
-                                <span>Last Update : {formatDateWithTimezone(productInfo.modifiedAt)}</span>
+                            <div className={"flex-1 flex flex-col sm:justify-end items-center pb-5" + (bp==="xs" ? " fixed bottom-0" : "")}>
+                                <span className="text-center">Creation date : {formatDateWithTimezone(productInfo.createdAt)}</span>
+                                <span className="text-center">Last Update : {formatDateWithTimezone(productInfo.modifiedAt)}</span>
                             </div>
                         </div>
                     </div>

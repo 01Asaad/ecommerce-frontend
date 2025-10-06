@@ -60,7 +60,7 @@ export default function Signup() {
     })
     const isSubmitting = fetcher.state === "submitting"
     return (
-        <div className='w-1/2 h-screen flex flex-col justify-center items-center'>
+        <div className='sm:w-1/2 h-screen flex flex-col justify-center items-center'>
             <div className="text-blue-400 mb-10">
                 <h1 className='text-5xl text-center'>E-commerce</h1>
                 <p className='text-black dark:text-white text-center'>Let's trade</p>

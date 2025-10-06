@@ -14,7 +14,7 @@ export async function action({ request, params }) {
     const formData = await request.formData();
     const email = formData.get('email');
     const password = formData.get('password');
-    
+
     const currentError = validateInputs(email, password);
     if (currentError) {
         console.log("validation error: " + currentError);
@@ -22,15 +22,15 @@ export async function action({ request, params }) {
     }
 
     try {
-        const response = await axios.post(import.meta.env.VITE_API_URL + 'api/auth/login', { 
-            identifier: email, 
-            password: password 
+        const response = await axios.post(import.meta.env.VITE_API_URL + 'api/auth/login', {
+            identifier: email,
+            password: password
         });
         return { user: response.data, success: true };
     } catch (errorThrowback) {
         console.error('Login failed:', errorThrowback.message);
-        return { 
-            error: errorThrowback.response?.data?.message || errorThrowback.message 
+        return {
+            error: errorThrowback.response?.data?.message || errorThrowback.message
         };
     }
 }
@@ -53,16 +53,16 @@ export default function Login() {
 
 
 
-    
+
     useEffect(() => {
         if (!isLoading && isLoggedIn) {
             navigateTo("/")
         }
-    }, [isLoading]) 
+    }, [isLoading])
 
     const isSubmitting = fetcher.state === 'submitting'
     return (
-        <div className='w-1/2 h-screen flex flex-col justify-center items-center'>
+        <div className='sm:w-1/2 h-screen flex flex-col justify-center items-center'>
             <div className="text-blue-400 mb-10">
                 <h1 className='text-5xl text-center'>E-commerce</h1>
                 <p className='text-black dark:text-white text-center'>Let's trade</p>
@@ -96,7 +96,9 @@ export default function Login() {
                         <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
                         <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
                     </svg>
-                    <span className="text-center w-full">Sign in with Google</span>
+                    <div className='max-w-[80%]'>
+                        <span className="text-center w-full">Sign in with Google</span>
+                    </div>
                 </button>
             </fetcher.Form>
             <div className='absolute bottom-0 mb-2'>

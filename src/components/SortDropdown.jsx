@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import useTWBreakpoints from '../hooks/useTWBreakpoints';
 // import SelectMenuWithAvatar from './UI/SelectMenuWithAvatar';
 function SortDropdown({ filters, setFilters }) {
+  const breakpoint = useTWBreakpoints()
   const handleCriteriaChange = (event) => {
     setFilters(prev => {
       return {
@@ -34,7 +36,7 @@ function SortDropdown({ filters, setFilters }) {
     })
   }
   return (
-    <div className='flex justify-between'>
+    <div className='lg:flex lg:justify-between'>
       <div className='flex justify-start mb-2 mt-4 mx-4 space-x-2'>
         <input className='w-xl outline-1 dark:outline-0 dark:bg-gray-800 p-2 rounded-sm' placeholder='product name' onChange={keywordChangeHandler} value={filters.keyword}></input>
         <div className='flex items-center border-1 border-gray-600 px-2 rounded-sm'>
@@ -43,9 +45,6 @@ function SortDropdown({ filters, setFilters }) {
         </div>
 
       </div>
-      {/* <div>
-        <SelectMenuWithAvatar choices={people} selected={people[0]} setSelected={() => {}}></SelectMenuWithAvatar>
-      </div> */}
       <div className="flex justify-end gap-2 mt-4 mx-4">
         <select className="disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer dark:bg-gray-950" value={filters.sortCriteria} onChange={handleCriteriaChange}>
           <option value="createdAt">Date Created</option>

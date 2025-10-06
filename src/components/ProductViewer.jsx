@@ -14,8 +14,8 @@ const fetchProducts = async (userID, sortCriteria, sortOrder, maxProducts, keywo
     const response = await axios.get(url)
     return { data: response.data }
   } catch (error) {
-    return { error: error.response.data?.message || error.message }
     console.error(error);
+    return { error: error.response.data?.message || error.message }
   }
 };
 
@@ -58,7 +58,7 @@ const ProductViewer = ({ userID, isShowAllProductsButtonShown = false, isAddButt
     <div className='flex flex-col justify-center'>
       {isSortBarShown && <SortDropdown filters={filters} setFilters={setFilters}></SortDropdown>}
       <ProductList products={products} loading={isLoading ? 8 : 0} />
-      {isAddButttonEnabled && <Link to="/products/add" className='fixed bottom-10 right-10 z-10 py-6 px-10 text-2xl rounded-3xl bg-blue-500 text-white hover:cursor-pointer hover:bg-blue-300'>Add</Link>}
+      {isAddButttonEnabled && <Link to="/products/add" className='fixed bottom-10 right-10 z-10 py-6 px-10 text-2xl rounded-3xl bg-blue-500 text-white hover:cursor-default hover:bg-blue-300'>Add</Link>}
       {isShowAllProductsButtonShown && !isLoading && <div className='mb-10 py-1 px-4 sm:px-6 lg:px-8 max-w-full'>
         {<Link className=" py-5 inline-block w-full rounded-4xl text-center outline-2 outline-gray-500 hover:text-gray-600" to="/products/">Show all products</Link>}
       </div>}
