@@ -137,6 +137,9 @@ export default function ProductAdd() {
             <label>Price</label>
             <input
               name="price"
+              type='number'
+              min={0}
+              step={0.01}
               value={formData.price}
               className="rounded-lg p-1.5 placeholder:text-gray-500 outline-1 -outline-offset-1 dark:outline-white/10 outline-black/25 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500"
               placeholder="Product's initial price"
@@ -146,6 +149,9 @@ export default function ProductAdd() {
             <label>Current Stock</label>
             <input
               name="stock"
+              min={0}
+              step={1}
+              type='number'
               value={formData.stock}
               placeholder="How many"
               className="rounded-lg p-1.5 placeholder:text-gray-500 outline-1 -outline-offset-1 dark:outline-white/10 outline-black/25 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500"

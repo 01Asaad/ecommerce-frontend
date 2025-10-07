@@ -3,7 +3,7 @@ import { useNavigate, NavLink, useLocation } from 'react-router-dom';
 import DarkThemeManage from "./DarkThemeManage"
 import { useUser } from "../context/UserProvider"
 import PopupModal from "./PopupModal"
-import useTWBreakpoint, {doesWidthReach} from "../hooks/useTWBreakpoints"
+import useTWBreakpoint, { doesWidthReach } from "../hooks/useTWBreakpoints"
 function addIfActive(fixedClasses, activeClasses, inactiveClasses = "") {
     return ({ isActive }) => (fixedClasses + (isActive ? (" " + activeClasses) : (" " + inactiveClasses)))
 }
@@ -29,14 +29,16 @@ export default function GlobalNavBar() {
         setIsLogoutModalActive(false)
     }
     function handleAuthButton() {
-        if (userCtx.isLoading) {return}
+        if (userCtx.isLoading) { return }
         if (userCtx.isLoggedIn) {
             setIsLogoutModalActive(true)
         } else {
             navigateTo("/login");
         }
     }
-    function handleSearchClick() {
+    function handleSearchSubmit(e) {
+        e.preventDefault()
+        if (!searchValue) {return}
         navigateTo("/products", { state: { from: location.pathname, keyword: searchValue } })
     }
     function searchValueChangeHandler(e) {
@@ -45,19 +47,21 @@ export default function GlobalNavBar() {
     const isSearchBarShown = !["/products", "/products/"].includes(location.pathname)
 
 
-    const searchBar = (<div className="space-x-2">
-        <span className="sr-only">navbar search</span>
-        <input
-            className="w-[80vw] lg:w-2xl bg-white dark:bg-gray-200 text-black caret-gray-300 placeholder:text-gray-500 p-2 rounded-sm"
-            name="search"
-            type="text"
-            placeholder="search products"
-            value={searchValue}
-            onChange={searchValueChangeHandler}
-        ></input>
-        <button onClick={handleSearchClick} className="bg-blue-400 hover:bg-blue-600 dark:bg-indigo-800 hover:dark:bg-indigo-700 text-white p-2 hover:cursor-pointer rounded-sm ">Search</button>
-    </div>)
-    
+    const searchBar = (
+        <form onSubmit={handleSearchSubmit} className="space-x-2">
+            <span className="sr-only">navbar search</span>
+            <input
+                className="w-[80vw] lg:w-2xl bg-white dark:bg-gray-200 text-black caret-gray-300 placeholder:text-gray-500 p-2 rounded-sm"
+                name="search"
+                type="text"
+                placeholder="search products"
+                value={searchValue}
+                onChange={searchValueChangeHandler}
+            ></input>
+            <button type="submit" className="bg-blue-400 hover:bg-blue-600 dark:bg-indigo-800 hover:dark:bg-indigo-700 text-white p-2 hover:cursor-pointer rounded-sm ">Search</button>
+        </form>
+    )
+
     return (
         <>
             <div className="h-20 w-full top-0 bg-blue-500 dark:bg-gradient-to-l dark:from-gray-800 dark:to-blue-600 flex justify-between items-center mb-2">
