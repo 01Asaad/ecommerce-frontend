@@ -3,27 +3,27 @@ import './App.css'
 import { UserProvider } from './context/UserProvider.jsx';
 import { ThemeProvider } from './context/ThemeProvider.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Home from "./pages/Home.jsx";
 import Login, {action as LoginAction} from './pages/Login.jsx';
 import Signup, {action as SignupAction} from './pages/Signup.jsx';
 import RootLayout from './pages/RootLayout.jsx';
 import AuthLayout from './pages/AuthLayout.jsx'
-import ProductView from './pages/ProductView.jsx';
+import ProductView, {loader as productViewLoader} from './pages/ProductView.jsx';
 import ProductAdd, {action as productAddAction} from './pages/ProductAdd.jsx';
-import NotFoundErrorPage from './pages/NotFoundError.jsx';
-import ProductsView from './pages/ProductsView.jsx';
+import ErrorPage from './pages/Error.jsx';
+import MainLoadingPage from "./pages/MainLoading.jsx"
+import ProductViewer from './pages/ProductViewer.jsx';
 const router = createBrowserRouter([
   {
-    path: "/", element: <RootLayout />, errorElement: <NotFoundErrorPage />, children: [
-      { index: true, element: <Home /> },
-      { path: "/products", element: <ProductsView /> },
-      { path: "/products/view/:productID", element: <ProductView /> },
+    path: "/", element: <RootLayout />, errorElement: <ErrorPage />, HydrateFallback : MainLoadingPage, children: [
+      { index: true, element: <ProductViewer maxProducts={8} isShowAllProductsButtonShown/> },
+      { path: "/products", element: <ProductViewer maxProducts={0} isShowAllProductsButtonShown={false} isSortBarShown isAddButttonEnabled/> },
+      { path: "/products/view/:productID", element: <ProductView />, loader : productViewLoader },
       { path: "/products/add", element: <ProductAdd />, action:productAddAction },
       { path: "/products/modify/:productID", element: <ProductAdd />, action : productAddAction },
     ]
   },
   {
-    element: <AuthLayout />, errorElement: <NotFoundErrorPage />, children: [
+    element: <AuthLayout />, errorElement: <ErrorPage />, children: [
       { path: "/login", element: <Login />, action : LoginAction },
       { path: "/signup", element: <Signup />, action : SignupAction },
     ]

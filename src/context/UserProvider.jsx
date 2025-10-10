@@ -42,8 +42,9 @@ export const UserProvider = ({ children }) => {
       if (!response.ok) {
         setAuthData(a => { return { ...a, userInfo: blankUser, isLoggedIn: false, isLoading : false } });
         console.error(await response.json());
-        
-        localStorage.removeItem('user');
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('user');
+        }
       } else {
         
         const data = await response.json();
@@ -73,8 +74,6 @@ export const UserProvider = ({ children }) => {
     if (!isLoading) {
       if (isLoggedIn) {
         localStorage.setItem('user', JSON.stringify(user));
-      } else {
-        localStorage.removeItem('user');
       }
     }
   }, [isLoggedIn, user, isLoading]);

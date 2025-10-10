@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import SortDropdown from "./SortDropdown.jsx";
-import ProductList from "./ProductList.jsx"
-import GridComponent from './GridComponent.jsx';
-import ErrorCard from './ErrorCard.jsx'
+import SortDropdown from "../components/SortDropdown.jsx";
+import ProductList from "../components/ProductList.jsx"
+import ErrorCard from '../components/ErrorCard.jsx'
 import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -18,6 +17,7 @@ const fetchProducts = async (userID, sortCriteria, sortOrder, maxProducts, keywo
     return { error: error.response.data?.message || error.message }
   }
 };
+
 
 const ProductViewer = ({ userID, isShowAllProductsButtonShown = false, isAddButttonEnabled = false, isSortBarShown = false, maxProducts = 0, initialSortCriteria = "createdAt", initialSortOrder = "asc" }) => {
   const location = useLocation()
@@ -68,6 +68,3 @@ const ProductViewer = ({ userID, isShowAllProductsButtonShown = false, isAddButt
 
 export default ProductViewer;
 
-function loader({ request, params }) {
-
-}
