@@ -31,7 +31,13 @@ export default function ProductView() {
     const productInfo = loaderResponse.data
 
     function deletionResolveHandler() {
-        navigateTo("/products")
+        navigateTo("/products", {
+            state: {
+                from: "/product/view/:productID",
+                productsUpdated: true,
+                productUpdateDetails: { "action": "delete", "productIDs": [productID] }
+            }
+        })
     }
     function productEdithandler() {
         navigateTo("/products/modify/" + productID, { state: { from: "/products/view/" + productID, productInfo: productInfo } })

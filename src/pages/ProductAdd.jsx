@@ -71,7 +71,13 @@ export default function ProductAdd() {
   useEffect(() => {
     if (fetcher.state === "idle") {
       if (fetcher.data?.success) {
-        navigateTo("/products")
+        navigateTo("/products", {
+            state: {
+                from: location.pathname,
+                productsUpdated: true,
+                productUpdateDetails: { "action": isEditing ? "modify" : "create", productInfo : fetcher.data.resData.productInfo }
+            }
+        })
       } else if (fetcher.data?.error) {
 
         setError(fetcher.data.error?.response?.data?.message || fetcher.data.error?.message);

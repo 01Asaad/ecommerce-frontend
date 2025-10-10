@@ -4,7 +4,7 @@ import ProductList from "../components/ProductList.jsx"
 import ErrorCard from '../components/ErrorCard.jsx'
 import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const fetchProducts = async (userID, sortCriteria, sortOrder, maxProducts, keyword, exactMatch) => {
   console.log("fetching prods " + keyword);
@@ -16,6 +16,7 @@ const fetchProducts = async (userID, sortCriteria, sortOrder, maxProducts, keywo
 
 const ProductViewer = ({ userID, isShowAllProductsButtonShown = false, isAddButttonEnabled = false, isSortBarShown = false, maxProducts = 0, initialSortCriteria = "createdAt", initialSortOrder = "asc" }) => {
   const location = useLocation();
+  const queryClient = useQueryClient();
   const [filters, setFilters] = useState({
     sortCriteria: initialSortCriteria,
     sortOrder: initialSortOrder,
@@ -23,8 +24,7 @@ const ProductViewer = ({ userID, isShowAllProductsButtonShown = false, isAddButt
     exactMatch: false,
     userID: userID
   })
-  console.log("rerender");
-  
+
   const [debouncedKeyword, setDebouncedKeyword] = useState(filters.keyword)
 
   useEffect(() => {
@@ -40,8 +40,32 @@ const ProductViewer = ({ userID, isShowAllProductsButtonShown = false, isAddButt
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['products', filters.userID, filters.sortCriteria, filters.sortOrder, maxProducts, debouncedKeyword, filters.exactMatch],
     queryFn: () => fetchProducts(filters.userID, filters.sortCriteria, filters.sortOrder, maxProducts, debouncedKeyword, filters.exactMatch),
-    staleTime: 1000 * 60
+    staleTime: 1000 * 60,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
   })
+  useEffect(() => {
+    if (location.state?.productsUpdated) {
+      if (location.state?.productUpdateDetails?.action === "delete") {
+        queryClient.setQueriesData(
+          { queryKey: ['products'] },
+          (old) => old?.filter((product) =>
+            !location.state.productUpdateDetails.productIDs.includes(product._id)
+          ) || []
+        );
+      } else if (location.state?.productUpdateDetails?.action === "modify") {
+        queryClient.setQueriesData(
+          { queryKey: ['products'] },
+          (old) => old?.map((product) => {
+            return product._id === location.state.productUpdateDetails.productInfo._id ? location.state.productUpdateDetails.productInfo : product
+          }
+          ) || []
+        );
+      } else { //better to invalidate when action==="create" because it brings many edge cases one of them being the new prod should respect the filters and and its place should be based on the sortOrder
+        queryClient.invalidateQueries({ queryKey: ['products'] })
+      }
+    }
+  }, [location.state?.productsUpdated, location.state?.productUpdateDetails?.action, queryClient, location.state?.productUpdateDetails?.productInfo?._id])
 
   if (error) {
     console.log(error);
