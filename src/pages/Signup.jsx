@@ -96,7 +96,7 @@ export default function Signup() {
                     placeholder="Password"
                     name="password"
                 />
-                {error && <p className='text-red-600'>{error}</p>}
+                {error && <p className='text-red-600'>{error.response.data.message}</p>}
                 <button
                     className={`mt-10 w-full disabled:cursor-default hover:cursor-pointer bg-blue-400 ${isSubmitting ? "" : "hover:bg-blue-700"} text-white transition duration-100 rounded-md p-3 m-4`}
                     type="submit"
