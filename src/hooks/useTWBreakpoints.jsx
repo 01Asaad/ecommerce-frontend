@@ -7,9 +7,9 @@ const breakpoints = {
   "sm": 640,
   "xs": 0
 }
-export function doesWidthReach(breakpoint) {
+function doesWidthReach(breakpoint) {
   return window.innerWidth >= breakpoints[breakpoint]
-} //has to be used alongside the hook currently and not independently otherwise compononts wont re-evaluate on breakpoint change
+} //has to be used alongside the hook and not independently to make sure compononts re-evaluate on breakpoint change, therefore not exported
 const useTWBreakpoints = () => {
   const [breakpoint, setBreakpoint] = useState('xs')
 
@@ -35,7 +35,7 @@ const useTWBreakpoints = () => {
     return () => window.removeEventListener('resize', checkBreakpoint);
   }, []);
 
-  return breakpoint;
+  return [breakpoint, doesWidthReach];
 };
 
 export default useTWBreakpoints

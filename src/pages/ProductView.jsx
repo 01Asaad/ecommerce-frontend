@@ -22,7 +22,7 @@ export function loader({ request, params }) {
 }
 
 export default function ProductView() {
-    const bp = useTWBreakpoints()
+    const [breakpoint, doesWidthReach] = useTWBreakpoints()
     const loaderResponse = useLoaderData()
     const [currentActiveModal, setCurrentActiveModal] = useState(null)
     const { productID } = useParams();
@@ -82,7 +82,7 @@ export default function ProductView() {
                         <p className="mt-1 text-md font-medium text-gray-900 text-center sm:text-left dark:text-gray-400"> price : ${productInfo.price}</p>
                         <p className="mt-1 text-md font-medium text-gray-900 text-center sm:text-left dark:text-gray-400"> stock : {productInfo.stock}</p>
                     </div>
-                    <div className={"flex-1 flex flex-col sm:justify-end items-center pb-5" + (bp === "xs" ? " fixed bottom-0" : "")}>
+                    <div className={"flex-1 flex flex-col sm:justify-end items-center pb-5" + (doesWidthReach("sm") ? "" : " fixed bottom-0")}>
                         <span className="text-center">Creation date : {formatDateWithTimezone(productInfo.createdAt)}</span>
                         <span className="text-center">Last Update : {formatDateWithTimezone(productInfo.modifiedAt)}</span>
                     </div>

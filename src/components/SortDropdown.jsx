@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import useTWBreakpoints from '../hooks/useTWBreakpoints';
-// import SelectMenuWithAvatar from './UI/SelectMenuWithAvatar';
 function SortDropdown({ filters, setFilters }) {
-  const breakpoint = useTWBreakpoints()
   const handleCriteriaChange = (event) => {
     setFilters(prev => {
       return {

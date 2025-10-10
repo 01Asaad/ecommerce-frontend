@@ -3,14 +3,14 @@ import { useNavigate, NavLink, useLocation } from 'react-router-dom';
 import DarkThemeManage from "./DarkThemeManage"
 import { useUser } from "../context/UserProvider"
 import PopupModal from "./PopupModal"
-import useTWBreakpoint, { doesWidthReach } from "../hooks/useTWBreakpoints"
+import useTWBreakpoint from "../hooks/useTWBreakpoints"
 function addIfActive(fixedClasses, activeClasses, inactiveClasses = "") {
     return ({ isActive }) => (fixedClasses + (isActive ? (" " + activeClasses) : (" " + inactiveClasses)))
 }
 export default function GlobalNavBar() {
     const [isLogoutModalActive, setIsLogoutModalActive] = useState(false)
     const userCtx = useUser()
-    const breakpoint = useTWBreakpoint()
+    const [breakpoint, doesWidthReach] = useTWBreakpoint()
     const [searchValue, setSearchValue] = useState("")
     const navigateTo = useNavigate()
     const location = useLocation()
@@ -63,7 +63,7 @@ export default function GlobalNavBar() {
                     <h1 className="ml-4 select-none text-sm lg:text-3xl text-white">e-commerce</h1>
                 </div>
                 <div className="mx-1 lg:mx-5">
-                    <NavLink to="/" className={addIfActive("mx-1 lg:mx-2 text-sm lg:text-base hover:text-black dark:hover:text-gray-500", "text-red-500", "text-white")}>Main</NavLink>
+                    <NavLink to="/" className={addIfActive("mx-1 lg:mx-2 text-sm lg:text-base hover:text-black dark:hover:text-gray-500", "text-red-500", "text-white")}>Home</NavLink>
                     <NavLink to="/products" className={addIfActive("mx-1 lg:mx-2 text-sm lg:text-base hover:text-black dark:hover:text-gray-500", "text-red-500", "text-white")}>Products</NavLink>
                 </div>
                 {isSearchBarShown && doesWidthReach("lg") && searchBar}
