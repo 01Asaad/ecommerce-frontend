@@ -15,13 +15,7 @@ export default function GlobalNavBar() {
     const navigateTo = useNavigate()
     const location = useLocation()
     function logoutConfirmHandle() {
-        userCtx.setUserInfo({
-            email: '',
-            firstName: '',
-            lastName: '',
-            username: "",
-            token: ''
-        })
+        userCtx.logout()
         setIsLogoutModalActive(false)
 
     }

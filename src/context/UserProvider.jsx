@@ -11,7 +11,8 @@ const UserContext = createContext({
     token: '',
     userID: '',
   },
-  setUserInfo: () => { }
+  setUserInfo: () => {},
+  logout : () => {}
 });
 
 export const UserProvider = ({ children }) => {
@@ -30,7 +31,7 @@ export const UserProvider = ({ children }) => {
   });
   const { isLoggedIn, isLoading, userInfo: user } = authData
   const fetchUserData = async (token) => {
-    
+
     try {
       const response = await fetch(import.meta.env.VITE_API_URL + 'api/auth/user', {
         method: 'GET',
@@ -40,22 +41,22 @@ export const UserProvider = ({ children }) => {
       });
 
       if (!response.ok) {
-        setAuthData(a => { return { ...a, userInfo: blankUser, isLoggedIn: false, isLoading : false } });
+        setAuthData(a => { return { ...a, userInfo: blankUser, isLoggedIn: false, isLoading: false } });
         console.error(await response.json());
         if (response.status === 401 || response.status === 403) {
           localStorage.removeItem('user');
         }
       } else {
-        
+
         const data = await response.json();
-        setAuthData(a => { return { ...a, userInfo: { ...data, token }, isLoggedIn: true, isLoading : false } });
+        setAuthData(a => { return { ...a, userInfo: { ...data, token }, isLoggedIn: true, isLoading: false } });
       }
     } catch (error) {
       console.error('Failed to fetch user data:', error);
-      setAuthData(a => { return { ...a, isLoggedIn: false, isLoading : false } });
+      setAuthData(a => { return { ...a, isLoggedIn: false, isLoading: false } });
     }
   };
-  
+
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -63,10 +64,10 @@ export const UserProvider = ({ children }) => {
       if (token) {
         fetchUserData(token);
       } else {
-        setAuthData(a => { return { ...a, isLoading : false } });
+        setAuthData(a => { return { ...a, isLoading: false } });
       }
     } else {
-      setAuthData(a => { return { ...a, isLoading : false } });
+      setAuthData(a => { return { ...a, isLoading: false } });
     }
   }, []);
 
@@ -85,6 +86,14 @@ export const UserProvider = ({ children }) => {
     setUserInfo: (userInfo) => {
       setAuthData((a) => { return { ...a, isLoggedIn: !!userInfo.token, userInfo: userInfo } })
     },
+    logout: () => {
+      setAuthData({
+        isLoggedIn: false,
+        isLoading: false,
+        userInfo: blankUser,
+      })
+      localStorage.removeItem('user')
+    }
   }), [isLoggedIn, user, isLoading]);
 
   return (
