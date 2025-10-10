@@ -83,7 +83,7 @@ export default function ProductView() {
                 </div>
             </div>
             <div>
-                {productInfo.provider === userCtx.user.userID && !isLoading && <div className="mr-5 flex justify-end space-x-2">
+                {productInfo.provider === userCtx.user.userID && <div className="mr-5 flex justify-end space-x-2">
                     <button className="bg-gray-600 text-white p-2 rounded-lg hover:cursor-pointer" onClick={productEdithandler}>Edit</button>
                     <button className="bg-red-500 text-white p-2 rounded-lg hover:cursor-pointer" onClick={deletionHandler}>Delete</button>
                 </div>}
