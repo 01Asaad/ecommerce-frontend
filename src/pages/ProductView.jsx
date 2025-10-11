@@ -68,7 +68,7 @@ export default function ProductView() {
 
     return (
         <div className="flex flex-col justify-center  w-full">
-            {currentActiveModal === "deletionConfirmation" && <PopupModal isError title="Product Deletion" content={`Are you sure you want to delete product ${productInfo.name}? This action can't be undone.`} onConfirm={deletionConfirmationHandler} isCancelleable onCancel={confirmationCancellationHandler} onIgnore={confirmationCancellationHandler} />}
+            {currentActiveModal === "deletionConfirmation" && <PopupModal isError title="Product Deletion" content={`Are you sure you want to delete product "${productInfo.name}"? This action can't be undone.`} onConfirm={deletionConfirmationHandler} isCancelleable onCancel={confirmationCancellationHandler} onIgnore={confirmationCancellationHandler} />}
             {currentActiveModal === "deletionResolve" && <PopupModal title="Product deleted" content={`${productInfo.name}  was deleted successfully`} onConfirm={deletionResolveHandler} onIgnore={deletionResolveHandler} />}
 
             <div className="mt-5 pl-5 flex flex-col sm:flex-row h-96 w-full justify-center sm:justify-start items-center sm:space-x-5">
@@ -89,7 +89,7 @@ export default function ProductView() {
                 </div>
             </div>
             <div>
-                {productInfo.provider === userCtx.user.userID && <div className="mr-5 flex justify-end space-x-2">
+                {(productInfo.provider === userCtx.user.userID || userCtx.user.admin) && <div className="mr-5 flex justify-end space-x-2">
                     <button className="bg-gray-600 text-white p-2 rounded-lg hover:cursor-pointer" onClick={productEdithandler}>Edit</button>
                     <button className="bg-red-500 text-white p-2 rounded-lg hover:cursor-pointer" onClick={deletionHandler}>Delete</button>
                 </div>}
