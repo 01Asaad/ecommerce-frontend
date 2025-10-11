@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-function SortDropdown({ filters, setFilters }) {
+function ProductFiltersPanel({ filters, setFilters }) {
   const handleCriteriaChange = (event) => {
     setFilters(prev => {
       return {
@@ -35,7 +35,7 @@ function SortDropdown({ filters, setFilters }) {
   return (
     <div className='lg:flex lg:justify-between'>
       <div className='flex justify-start mb-2 mt-4 mx-4 space-x-2'>
-        <input className='w-xl outline-1 dark:outline-0 dark:bg-gray-800 p-2 rounded-sm' placeholder='product name' onChange={keywordChangeHandler} value={filters.keyword}></input>
+        <input className='w-xl outline-1 dark:outline-0 dark:bg-gray-800 p-2 rounded-sm' placeholder='search keyword' onChange={keywordChangeHandler} value={filters.keyword}></input>
         <div className='flex items-center border-1 border-gray-600 px-2 rounded-sm'>
           <input className='w-7 h-5  bg-gray-800 rounded-sm' onChange={exactMatchCheckHandler} type='checkbox' id="exactMatch"></input>
           <label for="exactMatch">Exact match</label>
@@ -56,4 +56,4 @@ function SortDropdown({ filters, setFilters }) {
   );
 }
 
-export default SortDropdown;
+export default ProductFiltersPanel;

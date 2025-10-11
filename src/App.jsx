@@ -16,8 +16,8 @@ import ProductViewer from './pages/ProductViewer.jsx';
 const router = createBrowserRouter([
   {
     path: "/", element: <RootLayout />, errorElement: <ErrorPage />, HydrateFallback: MainLoadingPage, children: [
-      { index: true, element: <ProductViewer key="home" maxProducts={8} isShowAllProductsButtonShown /> },
-      { path: "/products", element: <ProductViewer key="products" maxProducts={0} isShowAllProductsButtonShown={false} isSortBarShown isAddButttonEnabled /> },
+      { index: true, element: <ProductViewer key="home" isPaginationPanelShown={false} initialProductsPerPage={8} isShowAllProductsButtonShown /> },
+      { path: "/products", element: <ProductViewer key="products" isShowAllProductsButtonShown={false} isFiltersPanelShown isAddButttonEnabled /> },
       { path: "/products/view/:productID", element: <ProductView />, loader: productViewLoader },
       { path: "/products/add", element: <ProductAdd />, action: productAddAction },
       { path: "/products/modify/:productID", element: <ProductAdd />, action: productAddAction },

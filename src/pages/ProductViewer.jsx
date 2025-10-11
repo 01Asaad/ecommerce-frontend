@@ -1,20 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import SortDropdown from "../components/SortDropdown.jsx";
+import ProductFiltersPanel from "../components/ProductFiltersPanel.jsx";
 import ProductList from "../components/ProductList.jsx"
 import ErrorCard from '../components/ErrorCard.jsx'
 import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import PaginationPanel from '../components/UI/PaginationPanel.jsx';
 
-const fetchProducts = async (userID, sortCriteria, sortOrder, maxProducts, keyword, exactMatch) => {
+const fetchProducts = async (userID, sortCriteria, sortOrder, keyword, exactMatch, page, perPage) => {
   console.log("fetching prods " + keyword);
   const isExactMatch = exactMatch;
-  const url = import.meta.env.VITE_API_URL + `api/products/get-products${userID ? "/" + userID : ""}?sortBy=${sortCriteria}&order=${sortOrder}&limit=${maxProducts}&exactMatch=${isExactMatch}${keyword ? "&keyword=" + keyword : ""}`;
+  const url = import.meta.env.VITE_API_URL + `api/products/get-products${userID ? "/" + userID : ""}?sortBy=${sortCriteria}&order=${sortOrder}&limit=${perPage}&exactMatch=${isExactMatch}${keyword ? "&keyword=" + keyword : ""}&page=${page}`;
   const response = await axios.get(url);
   return response.data;
 }
 
-const ProductViewer = ({ userID, isShowAllProductsButtonShown = false, isAddButttonEnabled = false, isSortBarShown = false, maxProducts = 0, initialSortCriteria = "createdAt", initialSortOrder = "asc" }) => {
+const ProductViewer = ({
+  userID,
+  isShowAllProductsButtonShown = false,
+  isAddButttonEnabled = false,
+  isFiltersPanelShown = false,
+  initialProductsPerPage = 20,
+  initialSortCriteria = "createdAt",
+  initialSortOrder = "asc",
+  isPaginationPanelShown = true
+}) => {
   const location = useLocation();
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState({
@@ -22,7 +32,9 @@ const ProductViewer = ({ userID, isShowAllProductsButtonShown = false, isAddButt
     sortOrder: initialSortOrder,
     keyword: location.state?.keyword || "",
     exactMatch: false,
-    userID: userID
+    userID: userID,
+    page: 0,
+    perPage: initialProductsPerPage
   })
 
   const [debouncedKeyword, setDebouncedKeyword] = useState(filters.keyword)
@@ -37,13 +49,14 @@ const ProductViewer = ({ userID, isShowAllProductsButtonShown = false, isAddButt
     };
   }, [filters.keyword])
 
-  const { data: products = [], isLoading, error } = useQuery({
-    queryKey: ['products', filters.userID, filters.sortCriteria, filters.sortOrder, maxProducts, debouncedKeyword, filters.exactMatch],
-    queryFn: () => fetchProducts(filters.userID, filters.sortCriteria, filters.sortOrder, maxProducts, debouncedKeyword, filters.exactMatch),
+  const { data = {products : [], paginationInfo : {totalPages : 1, currentPage : 1}}, isLoading, error } = useQuery({
+    queryKey: ['products', filters.userID, filters.sortCriteria, filters.sortOrder, debouncedKeyword, filters.exactMatch, filters.page, filters.perPage],
+    queryFn: () => fetchProducts(filters.userID, filters.sortCriteria, filters.sortOrder, debouncedKeyword, filters.exactMatch, filters.page, filters.perPage),
     staleTime: 1000 * 60,
     refetchOnMount: false,
     refetchOnWindowFocus: false
   })
+  const {products, pagination : paginationInfo} = data
   useEffect(() => {
     if (location.state?.productsUpdated) {
       if (location.state?.productUpdateDetails?.action === "delete") {
@@ -74,12 +87,15 @@ const ProductViewer = ({ userID, isShowAllProductsButtonShown = false, isAddButt
 
   return (
     <div className='flex flex-col justify-center'>
-      {isSortBarShown && <SortDropdown filters={filters} setFilters={setFilters} />}
-      <ProductList products={products} loading={isLoading ? 8 : 0} />
+      {isFiltersPanelShown && <ProductFiltersPanel filters={filters} setFilters={setFilters} />}
+      <ProductList products={products} loading={isLoading ? filters.perPage : 0} />
       {isAddButttonEnabled && <Link to="/products/add" className='fixed bottom-10 right-10 z-10 py-6 px-10 text-2xl rounded-3xl bg-blue-500 text-white hover:cursor-default hover:bg-blue-300'>Add</Link>}
-      {isShowAllProductsButtonShown && !isLoading && <div className='mb-10 py-1 px-4 sm:px-6 lg:px-8 max-w-full'>
-        {<Link className=" py-5 inline-block w-full rounded-4xl text-center outline-2 outline-gray-500 hover:text-gray-600" to="/products/">Show all products</Link>}
+      {isShowAllProductsButtonShown && !isLoading && <div className='mb-10 py-1 px-4 sm:px-6 lg:px-8 max-w-full flex justify-center'>
+        {<Link className=" py-5 inline-block rounded-4xl text-center dark:text-gray-600 dark:hover:text-gray-300" to="/products/">{"Show all products >"}</Link>}
       </div>}
+      {/* {isPaginationPanelShown && !isLoading && paginationInfo.totalPages > 1 && <PaginationPanel totalItems={paginationInfo.totalItems} totalPages={paginationInfo.totalPages} pageState={filters} setPageState={setFilters} />} */}
+      {isPaginationPanelShown && !isLoading && <PaginationPanel totalItems={paginationInfo.totalItems} totalPages={paginationInfo.totalPages} pageState={filters} setPageState={setFilters} />}
+      {isAddButttonEnabled && <div className='h-30'/>}
     </div>
   )
 };
