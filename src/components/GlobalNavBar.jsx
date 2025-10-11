@@ -45,11 +45,10 @@ export default function GlobalNavBar() {
         <form onSubmit={handleSearchSubmit} className="space-x-2">
             <span className="sr-only">navbar search</span>
             <input
-                className="w-[80vw] lg:w-2xl bg-white dark:bg-gray-200 text-black caret-gray-300 placeholder:text-gray-500 p-2 rounded-sm"
+                className="w-[80vw] lg:w-2xl bg-white dark:bg-gray-300 text-black caret-gray-300 placeholder:text-gray-500 p-2 rounded-sm"
                 name="search"
                 type="text"
                 placeholder="search products"
-                value={searchValue}
                 onChange={searchValueChangeHandler}
             ></input>
             <button type="submit" className="bg-blue-400 hover:bg-blue-600 dark:bg-indigo-800 hover:dark:bg-indigo-700 text-white p-2 hover:cursor-pointer rounded-sm ">Search</button>

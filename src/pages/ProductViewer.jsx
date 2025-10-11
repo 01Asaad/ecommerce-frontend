@@ -61,7 +61,7 @@ const ProductViewer = ({ userID, isShowAllProductsButtonShown = false, isAddButt
           }
           ) || []
         );
-      } else { //better to invalidate when action==="create" because it brings many edge cases one of them being the new prod should respect the filters and and its place should be based on the sortOrder
+      } else { //better to invalidate when action==="create" because it brings many edge cases one of them being the new prod should respect the filters and its index in the array should be based on the sortOrder
         queryClient.invalidateQueries({ queryKey: ['products'] })
       }
     }

@@ -178,7 +178,7 @@ export default function ProductAdd() {
               type="submit"
               className={`rounded-lg ${isIdle ? "bg-indigo-500 hover:cursor-pointer" : "bg-blue-300"} w-24 py-2 mt-4`}
               disabled={!isIdle}
-            >{fetcher.state === "submitting" ? "Submitting" : (isEditing ? "Edit" : "Create")}</button>
+            >{fetcher.state === "submitting" ? (isEditing ? "Editing" : "Creating") : (isEditing ? "Edit" : "Create")}</button>
           </div>
         </fetcher.Form>
       </div>

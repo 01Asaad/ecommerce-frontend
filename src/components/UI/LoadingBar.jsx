@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const LoadingBar = ({ isLoading, color = 'bg-blue-500', height = 'h-1' }) => {
+const LoadingBar = ({ isLoading, color = 'bg-yellow-500', height = 'h-0.5' }) => {
 	const [isVisible, setIsVisible] = useState(false);
 	const [progress, setProgress] = useState(0);
 
