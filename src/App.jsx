@@ -8,7 +8,7 @@ import Login, { action as LoginAction } from './pages/Login.jsx';
 import Signup, { action as SignupAction } from './pages/Signup.jsx';
 import RootLayout from './pages/RootLayout.jsx';
 import AuthLayout from './pages/AuthLayout.jsx'
-import ProductView, { loader as productViewLoader } from './pages/ProductView.jsx';
+import ProductView, { loader as productViewLoader, shouldReevaluate as productViewShouldReevaluate } from './pages/ProductView.jsx';
 import ProductAdd, { action as productAddAction } from './pages/ProductAdd.jsx';
 import ErrorPage from './pages/Error.jsx';
 import MainLoadingPage from "./pages/MainLoading.jsx"
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
     path: "/", element: <RootLayout />, errorElement: <ErrorPage />, HydrateFallback: MainLoadingPage, children: [
       { index: true, element: <ProductViewer key="home" isPaginationPanelShown={false} initialProductsPerPage={8} isShowAllProductsButtonShown /> },
       { path: "/products", element: <ProductViewer key="products" isShowAllProductsButtonShown={false} isFiltersPanelShown isAddButttonEnabled /> },
-      { path: "/products/view/:productID", element: <ProductView />, loader: productViewLoader, shouldRevalidate : shouldReevaluate },
+      { path: "/products/view/:productID", element: <ProductView />, loader: productViewLoader, shouldRevalidate : productViewShouldReevaluate },
       { path: "/products/add", element: <ProductAdd />, action: productAddAction },
       { path: "/products/modify/:productID", element: <ProductAdd />, action: productAddAction },
     ]
