@@ -15,7 +15,11 @@ function PaginationPanel({ totalItems, totalPages, pageState, setPageState }) {
 		setPageState((prev) => { return { ...prev, perPage: event.target.value, page : prev.page>(newTotalPages-1) ? newTotalPages-1 : prev.page} })
 	};
 	const handlePageChange = (event) => {
-		setPageState((prev) => { return { ...prev, page: parseInt(dynamicPageRef.current.value) - 1 } })
+		event.preventDefault()
+		const parsedValue = parseInt(dynamicPageRef.current.value) - 1
+		if (parsedValue>= 0 && parsedValue < totalPages && parsedValue!== pageState.page) {
+			setPageState((prev) => { return { ...prev, page: parsedValue } })
+		}
 	};
 	const handleNextPageClick = (event) => {
 		if (pageState.page === totalPages - 1) { return }
@@ -30,7 +34,12 @@ function PaginationPanel({ totalItems, totalPages, pageState, setPageState }) {
 		setPageState((prev) => { return { ...prev, page: pageIndex } })
 	}
 	const dynamicPageBlurHandler = e => {
-		dynamicPageRef.current.value = dynamicPageInputValue
+		const parsedValue = parseInt(dynamicPageRef.current.value) - 1
+		if (parsedValue >= 0 && parsedValue < totalPages && parsedValue !== pageState.page) {
+			setPageState((prev) => { return { ...prev, page: parsedValue } })
+		} else {
+			dynamicPageRef.current.value = dynamicPageInputValue
+		}
 	}
 
 	return (
@@ -45,6 +54,8 @@ function PaginationPanel({ totalItems, totalPages, pageState, setPageState }) {
 				<div className='space-x-2'>
 					<nav aria-label="Pagination" className="isolate inline-flex -space-x-px rounded-md">
 						<select className="rounded-md mx-2 px-1.5 py-2 text-bold text-gray-500 dark:text-gray-400 inset-ring inset-ring-gray-500 dark:inset-ring-gray-700 disabled:opacity-50 dark:bg-gray-950" value={pageState.perPage} onChange={handlePerPageChange}>
+							<option value={5}>5</option>
+							<option value={10}>10</option>
 							<option value={20}>20</option>
 							<option value={30}>30</option>
 							<option value={40}>40</option>
