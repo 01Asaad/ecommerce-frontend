@@ -24,7 +24,7 @@ const useTWBreakpoints = () => {
       const newBreakpoint = matchedBreakpoint ? matchedBreakpoint[0] : 'xs'
       
       setBreakpoint(prev => {
-        console.log(prev !== newBreakpoint ? `changing bp from ${prev} to ${newBreakpoint}` : "keeping bp as "+newBreakpoint);
+        // console.log(prev !== newBreakpoint ? `changing bp from ${prev} to ${newBreakpoint}` : "keeping bp as "+newBreakpoint);
         return prev !== newBreakpoint ? newBreakpoint : prev})
         
     };

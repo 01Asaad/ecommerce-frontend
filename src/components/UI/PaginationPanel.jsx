@@ -11,7 +11,8 @@ function PaginationPanel({ totalItems, totalPages, pageState, setPageState }) {
 	const dynamicPageInputValue = isDynamicPageSelected ? (pageState.page + 1) : "..."
 
 	const handlePerPageChange = (event) => {
-		setPageState((prev) => { return { ...prev, perPage: event.target.value } })
+		const newTotalPages = Math.ceil(totalItems/event.target.value)
+		setPageState((prev) => { return { ...prev, perPage: event.target.value, page : prev.page>(newTotalPages-1) ? newTotalPages-1 : prev.page} })
 	};
 	const handlePageChange = (event) => {
 		setPageState((prev) => { return { ...prev, page: parseInt(dynamicPageRef.current.value) - 1 } })
