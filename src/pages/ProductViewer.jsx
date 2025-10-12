@@ -49,7 +49,7 @@ const ProductViewer = ({
     };
   }, [filters.keyword])
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isFetching : isLoading, error } = useQuery({
     queryKey: ['products', filters.userID, filters.sortCriteria, filters.sortOrder, debouncedKeyword, filters.exactMatch, filters.page, filters.perPage],
     queryFn: () => fetchProducts(filters.userID, filters.sortCriteria, filters.sortOrder, debouncedKeyword, filters.exactMatch, filters.page, filters.perPage),
     staleTime: 1000 * 60,
@@ -57,7 +57,6 @@ const ProductViewer = ({
     refetchOnWindowFocus: false,
     placeholderData: { products: [], pagination: { totalPages: 1, currentPage: 1, totalItems: filters.perPage } }
   })
-  console.log(data);
 
   const { products, pagination: paginationInfo } = data
   useEffect(() => {
