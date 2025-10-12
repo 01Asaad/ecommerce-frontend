@@ -32,7 +32,7 @@ const ProductViewer = ({
   isFiltersPanelShown = false,
   initialProductsPerPage = 20,
   initialSortCriteria = "createdAt",
-  initialSortOrder = "asc",
+  initialSortOrder = "desc",
   isPaginationPanelShown = true
 }) => {
   const location = useLocation();
@@ -68,7 +68,7 @@ const ProductViewer = ({
     placeholderData: { products: [], pagination: { totalPages: 1, currentPage: 1, totalItems: filters.perPage } }
   })
 
-  const { products, pagination: paginationInfo } = data
+  const { products, pagination: paginationInfo } = data ? data : { products: [], pagination: { totalPages: 1, currentPage: 1, totalItems: filters.perPage } }
   useEffect(() => {
     if (location.state?.productsUpdated) {
       if (location.state?.productUpdateDetails?.action === "delete") {
