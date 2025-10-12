@@ -49,30 +49,35 @@ const ProductViewer = ({
     };
   }, [filters.keyword])
 
-  const { data = {products : [], paginationInfo : {totalPages : 1, currentPage : 1}}, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['products', filters.userID, filters.sortCriteria, filters.sortOrder, debouncedKeyword, filters.exactMatch, filters.page, filters.perPage],
     queryFn: () => fetchProducts(filters.userID, filters.sortCriteria, filters.sortOrder, debouncedKeyword, filters.exactMatch, filters.page, filters.perPage),
     staleTime: 1000 * 60,
     refetchOnMount: false,
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    placeholderData: { products: [], pagination: { totalPages: 1, currentPage: 1, totalItems: filters.perPage } }
   })
-  const {products, pagination : paginationInfo} = data
+  console.log(data);
+
+  const { products, pagination: paginationInfo } = data
   useEffect(() => {
     if (location.state?.productsUpdated) {
       if (location.state?.productUpdateDetails?.action === "delete") {
         queryClient.setQueriesData(
           { queryKey: ['products'] },
-          (old) => old?.filter((product) =>
+          (old) => {return {...old, products : old?.products?.filter((product) =>
             !location.state.productUpdateDetails.productIDs.includes(product._id)
-          ) || []
+          ) || []}}
         );
       } else if (location.state?.productUpdateDetails?.action === "modify") {
         queryClient.setQueriesData(
           { queryKey: ['products'] },
-          (old) => old?.map((product) => {
-            return product._id === location.state.productUpdateDetails.productInfo._id ? location.state.productUpdateDetails.productInfo : product
+          (old) => {
+            return {...old, products : old?.products?.map((product) => {
+              return product._id === location.state.productUpdateDetails.productInfo._id ? location.state.productUpdateDetails.productInfo : product
+            }
+            ) || []}
           }
-          ) || []
         );
       } else { //better to invalidate when action==="create" because it brings many edge cases one of them being the new prod should respect the filters and its index in the array should be based on the sortOrder
         queryClient.invalidateQueries({ queryKey: ['products'] })
@@ -91,11 +96,11 @@ const ProductViewer = ({
       <ProductList products={products} loading={isLoading ? filters.perPage : 0} />
       {isAddButttonEnabled && <Link to="/products/add" className='fixed bottom-10 right-10 z-10 py-6 px-10 text-2xl rounded-3xl bg-blue-500 text-white hover:cursor-default hover:bg-blue-300'>Add</Link>}
       {isShowAllProductsButtonShown && !isLoading && <div className='mb-10 py-1 px-4 sm:px-6 lg:px-8 max-w-full flex justify-center'>
-        {<Link className=" py-5 inline-block rounded-4xl text-center dark:text-gray-600 dark:hover:text-gray-300" to="/products/">{"Show all products >"}</Link>}
+        {<Link className=" py-5 inline-block rounded-4xl text-center text-gray-600 hover:text-gray-300" to="/products/">{"Show all products >"}</Link>}
       </div>}
       {/* {isPaginationPanelShown && !isLoading && paginationInfo.totalPages > 1 && <PaginationPanel totalItems={paginationInfo.totalItems} totalPages={paginationInfo.totalPages} pageState={filters} setPageState={setFilters} />} */}
       {isPaginationPanelShown && !isLoading && <PaginationPanel totalItems={paginationInfo.totalItems} totalPages={paginationInfo.totalPages} pageState={filters} setPageState={setFilters} />}
-      {isAddButttonEnabled && <div className='h-30'/>}
+      {isAddButttonEnabled && <div className='h-30' />}
     </div>
   )
 };
