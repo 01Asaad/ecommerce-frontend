@@ -6,6 +6,9 @@ import PopupModal from "../components/PopupModal";
 import axios from "axios";
 import useTWBreakpoints from "../hooks/useTWBreakpoints";
 
+const loaderCache = new Map()
+const STALETIME = 60000
+
 function formatDateWithTimezone(dateString, timezoneOffset = 0) {
     const date = new Date(dateString);
     const targetDate = new Date(date.getTime() + timezoneOffset * 60 * 60 * 1000);
@@ -17,8 +20,30 @@ function formatDateWithTimezone(dateString, timezoneOffset = 0) {
 
     return `${day}-${month}-${year} ${hours}:${minutes}UTC`;
 }
+
 export function loader({ request, params }) {
+    const cacheKey = `product-${params.productID}`
+    const cachedData = loaderCache.get(cacheKey)
+
+    if (cachedData && (Date.now() - cachedData.timestamp < STALETIME)) {
+        return cachedData.data
+    }
+
     return axios.get(import.meta.env.VITE_API_URL + `api/products/get-product/${params.productID}`)
+        .then(response => {
+            loaderCache.set(cacheKey, {
+                data: response,
+                timestamp: Date.now()
+            });
+            return response
+        })
+}
+
+export function shouldReevaluate({ currentParams, nextParams }) {
+    const resourceId = currentParams.id || nextParams.id
+    const cachedData = loaderCache.get(`product-${resourceId}`)
+
+    return !cachedData || Date.now() - cachedData.timestamp < STALETIME
 }
 
 export default function ProductView() {
