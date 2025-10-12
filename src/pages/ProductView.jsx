@@ -5,6 +5,8 @@ import { TEMPLATEIMAGES } from "../constants/index"
 import PopupModal from "../components/UI/PopupModal";
 import axios from "axios";
 import useTWBreakpoints from "../hooks/useTWBreakpoints";
+import { useMutation } from "@tanstack/react-query";
+import { getToken } from "../utils/helpers";
 
 const loaderCache = new Map()
 const STALETIME = 60000
@@ -45,7 +47,18 @@ export function shouldReevaluate({ currentParams, nextParams }) {
 
     return !cachedData || Date.now() - cachedData.timestamp < STALETIME
 }
-
+const deleteProduct = async (productID) => {
+    const response = await axios.post(
+        import.meta.env.VITE_API_URL + `api/products/delete-product/${productID}`,
+        {},
+        {
+            headers: {
+                "Authorization": "Bearer " + getToken()
+            }
+        }
+    );
+    return response.data;
+};
 export default function ProductView() {
     const [breakpoint, doesWidthReach] = useTWBreakpoints()
     const loaderResponse = useLoaderData()
@@ -54,6 +67,18 @@ export default function ProductView() {
     const userCtx = useUser()
     const navigateTo = useNavigate()
     const productInfo = loaderResponse.data
+
+    const deleteProductMutation = useMutation({
+        mutationFn: deleteProduct,
+        onSuccess: (data, variables, context) => {
+            console.log('Product deleted successfully:', data);
+            setCurrentActiveModal("deletionResolve")
+        },
+        onError: (error, variables, context) => {
+            setCurrentActiveModal("error:" + error?.response?.data?.message || error.message)
+            console.error('Error deleting product:', error);
+        },
+    });
 
     function deletionResolveHandler() {
         navigateTo("/products", {
@@ -71,17 +96,9 @@ export default function ProductView() {
         setCurrentActiveModal("deletionConfirmation")
     }
     async function deletionConfirmationHandler() {
-        try {
-            await axios.post(import.meta.env.VITE_API_URL + `api/products/delete-product/${productID}`, {}, {
-                headers: {
-                    "Authorization": "Bearer " + userCtx.user.token
-                }
-            })
-            setCurrentActiveModal("deletionResolve")
-        } catch (error) {
-            setCurrentActiveModal("error:" + error.message)
-        }
+        deleteProductMutation.mutate(productID)
     }
+    
     function confirmationCancellationHandler() {
         setCurrentActiveModal(null)
     }
@@ -93,9 +110,24 @@ export default function ProductView() {
 
     return (
         <div className="flex flex-col justify-center  w-full">
-            {currentActiveModal === "deletionConfirmation" && <PopupModal isError title="Product Deletion" content={`Are you sure you want to delete product "${productInfo.name}"? This action can't be undone.`} onConfirm={deletionConfirmationHandler} isCancelleable onCancel={confirmationCancellationHandler} onIgnore={confirmationCancellationHandler} />}
-            {currentActiveModal === "deletionResolve" && <PopupModal title="Product deleted" content={`${productInfo.name}  was deleted successfully`} onConfirm={deletionResolveHandler} onIgnore={deletionResolveHandler} />}
-
+            {currentActiveModal === "deletionConfirmation" && <PopupModal
+                isError isCancelleable
+                inputDisabled={deleteProductMutation.isPending}
+                title="Product Deletion"
+                content={`Are you sure you want to delete product "${productInfo.name}"? This action can't be undone.`}
+                confirmText={deleteProductMutation.isPending ? "Deleting..." : null}
+                onConfirm={deletionConfirmationHandler}
+                onCancel={confirmationCancellationHandler}
+                onIgnore={confirmationCancellationHandler}
+            />}
+            {currentActiveModal === "deletionResolve" && <PopupModal title="Product deleted" content={`"${productInfo.name}" was deleted successfully`} onConfirm={deletionResolveHandler} onIgnore={deletionResolveHandler} />}
+            {currentActiveModal && currentActiveModal.startsWith("error:") && <PopupModal
+                isError
+                title="Error"
+                content={currentActiveModal.slice(6)}
+                confirmText={"Dismiss"}
+                onConfirm={() => {setCurrentActiveModal(null)}}
+            />}
             <div className="mt-5 pl-5 flex flex-col sm:flex-row h-96 w-full justify-center sm:justify-start items-center sm:space-x-5">
                 {imageEl}
                 <div className="ml-5 flex flex-col justify-between items-center sm:items-start h-full">

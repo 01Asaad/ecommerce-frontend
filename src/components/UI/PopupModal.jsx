@@ -3,9 +3,11 @@ import { createPortal } from "react-dom";
 
 
 const Backdrop = props => {
-    return <div onClick={props.onIgnore} className="fixed top-0 left-0 w-[100%] h-[100vh] z-100 bg-black opacity-90"></div>
+    console.log("input is", props.inputDisabled);
+    
+    return <div onClick={props.inputDisabled ? () => {} : props.onIgnore} className="fixed top-0 left-0 w-[100%] h-[100vh] z-100 bg-black opacity-90"></div>
 }
-const Modal = props => {
+const Modal = props => {    
     return (
         <div className="flex w-screen sm:w-[40%] rounded-lg flex-col justify-center items-start fixed bottom-0 sm:bottom-auto sm:top-[30vh] sm:left-[30%] z-[100] overflow-hidden bg-white dark:bg-gray-900">
             <div className="flex flex-col lg:flex-row justify-start items-center lg:items-start w-full min-h-35 bg-white dark:bg-gray-800  pb-5">
@@ -22,14 +24,22 @@ const Modal = props => {
                 </div>
             </div>
             <footer className="flex flex-col lg:flex-row bg-gray-100 dark:bg-gray-900 min-h-20 dark:border-t border-black lg:justify-end w-full px-5 py-2">
-                {(props.isCancelleable) && <button className={`bg-white lg:w-1/2 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-600 text-black dark:text-white w-full font-medium lg:mx-2 my-2 px-4 py-3 rounded-md`} onClick={props.onCancel}>Cancel</button>}
-                <button className={`${props.isError ? "bg-red-600 hover:bg-red-500" : "bg-cyan-500 hover:bg-cyan-700 dark:bg-gray-800 dark:hover:bg-gray-600"} text-white ${props.isCancelleable ? "lg:w-1/2" : "w-full"} font-medium my-2 lg:m-2 px-4 py-3 rounded-md`} onClick={props.onConfirm}>{props.confirmText || "Confirm"}</button>
+                {(props.isCancelleable) && <button
+                className={`bg-white lg:w-1/2 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-600 text-black dark:text-white w-full font-medium lg:mx-2 my-2 px-4 py-3 rounded-md`}
+                onClick={props.onCancel}
+                disabled={props.inputDisabled}
+                >Cancel</button>}
+                <button
+                className={`${props.isError ? "bg-red-600 hover:bg-red-500" : "bg-cyan-500 hover:bg-cyan-700 dark:bg-gray-800 dark:hover:bg-gray-600"} text-white ${props.isCancelleable ? "lg:w-1/2" : "w-full"} font-medium my-2 lg:m-2 px-4 py-3 rounded-md`}
+                disabled={props.inputDisabled}
+                onClick={props.onConfirm}
+                >{props.confirmText || "Confirm"}</button>
             </footer>
         </div>
     )
 }
 export default function PopupModal(props) {
-    // props : onIgnore, onConfirm, onCancel, title, content, isCancelleable
+    // props : onIgnore, onConfirm, onCancel, title, content, isCancelleable, confirmText, inputDisabled
     return (
         <>
             {createPortal((<Backdrop {...props} />), document.getElementById("backdrop-root"))}
