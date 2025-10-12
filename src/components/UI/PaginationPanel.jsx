@@ -1,9 +1,16 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 function PaginationPanel({ totalItems, totalPages, pageState, setPageState }) {
 
 	const dynamicPageRef = useRef()
-	const startPages = totalPages > 3 ? [1, 2] : [1]
-	const endPages = totalPages > 2 ? totalPages === 5 ? [totalPages - 2, totalPages - 1, totalPages] : [totalPages - 1, totalPages] : totalPages === 1 ? [] : [totalPages]
+	
+	const { startPages, endPages } = useMemo(() => {
+		const start = totalPages > 3 ? [1, 2] : [1];
+		const end = totalPages > 2 ?
+			(totalPages === 5 ? [totalPages - 2, totalPages - 1, totalPages] : [totalPages - 1, totalPages]) :
+			(totalPages === 1 ? [] : [totalPages]);
+		return { startPages: start, endPages: end };
+	}, [totalPages]);
+
 	const isInputPageShown = totalPages > 5
 	const selectedClasses = " focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 bg-indigo-500 text-white"
 	const unselectedClasses = "inset-ring inset-ring-gray-500 dark:inset-ring-gray-700 hover:bg-gray-200 dark:hover:bg-white/5 focus:outline-offset-0 text-gray-400 dark:text-gray-200"
@@ -11,15 +18,12 @@ function PaginationPanel({ totalItems, totalPages, pageState, setPageState }) {
 	const dynamicPageInputValue = isDynamicPageSelected ? (pageState.page + 1) : "..."
 
 	const handlePerPageChange = (event) => {
-		const newTotalPages = Math.ceil(totalItems/event.target.value)
-		setPageState((prev) => { return { ...prev, perPage: event.target.value, page : prev.page>(newTotalPages-1) ? newTotalPages-1 : prev.page} })
+		const newTotalPages = Math.ceil(totalItems / event.target.value)
+		setPageState((prev) => { return { ...prev, perPage: event.target.value, page: prev.page > (newTotalPages - 1) ? newTotalPages - 1 : prev.page } })
 	};
 	const handlePageChange = (event) => {
 		event.preventDefault()
-		const parsedValue = parseInt(dynamicPageRef.current.value) - 1
-		if (parsedValue>= 0 && parsedValue < totalPages && parsedValue!== pageState.page) {
-			setPageState((prev) => { return { ...prev, page: parsedValue } })
-		}
+		dynamicPageBlurHandler()
 	};
 	const handleNextPageClick = (event) => {
 		if (pageState.page === totalPages - 1) { return }
@@ -33,7 +37,7 @@ function PaginationPanel({ totalItems, totalPages, pageState, setPageState }) {
 	const selectPageHandle = pageIndex => {
 		setPageState((prev) => { return { ...prev, page: pageIndex } })
 	}
-	const dynamicPageBlurHandler = e => {
+	const dynamicPageBlurHandler = () => {
 		const parsedValue = parseInt(dynamicPageRef.current.value) - 1
 		if (parsedValue >= 0 && parsedValue < totalPages && parsedValue !== pageState.page) {
 			setPageState((prev) => { return { ...prev, page: parsedValue } })
@@ -85,6 +89,7 @@ function PaginationPanel({ totalItems, totalPages, pageState, setPageState }) {
 									ref={dynamicPageRef}
 									className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-400 inset-ring inset-ring-gray-500 dark:inset-ring-gray-700 focus:outline-offset-0 w-12 text-center ${isDynamicPageSelected ? "bg-indigo-500" : ""}`}
 									defaultValue={dynamicPageInputValue}
+									onFocus={() => { dynamicPageRef.current.value = "" }}
 									onBlur={dynamicPageBlurHandler}
 									name='dynamicPage' >
 								</input>

@@ -8,11 +8,21 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import PaginationPanel from '../components/UI/PaginationPanel.jsx';
 
 const fetchProducts = async (userID, sortCriteria, sortOrder, keyword, exactMatch, page, perPage) => {
-  console.log("fetching prods " + keyword);
-  const isExactMatch = exactMatch;
-  const url = import.meta.env.VITE_API_URL + `api/products/get-products${userID ? "/" + userID : ""}?sortBy=${sortCriteria}&order=${sortOrder}&limit=${perPage}&exactMatch=${isExactMatch}${keyword ? "&keyword=" + keyword : ""}&page=${page}`;
-  const response = await axios.get(url);
-  return response.data;
+  const isExactMatch = exactMatch
+  const baseUrl = `${import.meta.env.VITE_API_URL}api/products/get-products${userID ? `/${userID}` : ''}`
+  const urlParams = new URLSearchParams({
+    sortBy: sortCriteria,
+    order: sortOrder,
+    limit: perPage,
+    exactMatch: isExactMatch,
+    page: page
+  })
+  if (keyword) {
+    urlParams.append('keyword', keyword)
+  }
+  const url = baseUrl + "?" + urlParams.toString()
+  const response = await axios.get(url)
+  return response.data
 }
 
 const ProductViewer = ({
@@ -49,7 +59,7 @@ const ProductViewer = ({
     };
   }, [filters.keyword])
 
-  const { data, isFetching : isLoading, error } = useQuery({
+  const { data, isFetching: isLoading, error } = useQuery({
     queryKey: ['products', filters.userID, filters.sortCriteria, filters.sortOrder, debouncedKeyword, filters.exactMatch, filters.page, filters.perPage],
     queryFn: () => fetchProducts(filters.userID, filters.sortCriteria, filters.sortOrder, debouncedKeyword, filters.exactMatch, filters.page, filters.perPage),
     staleTime: 1000 * 60,
@@ -64,18 +74,24 @@ const ProductViewer = ({
       if (location.state?.productUpdateDetails?.action === "delete") {
         queryClient.setQueriesData(
           { queryKey: ['products'] },
-          (old) => {return {...old, products : old?.products?.filter((product) =>
-            !location.state.productUpdateDetails.productIDs.includes(product._id)
-          ) || []}}
+          (old) => {
+            return {
+              ...old, products: old?.products?.filter((product) =>
+                !location.state.productUpdateDetails.productIDs.includes(product._id)
+              ) || []
+            }
+          }
         );
       } else if (location.state?.productUpdateDetails?.action === "modify") {
         queryClient.setQueriesData(
           { queryKey: ['products'] },
           (old) => {
-            return {...old, products : old?.products?.map((product) => {
-              return product._id === location.state.productUpdateDetails.productInfo._id ? location.state.productUpdateDetails.productInfo : product
+            return {
+              ...old, products: old?.products?.map((product) => {
+                return product._id === location.state.productUpdateDetails.productInfo._id ? location.state.productUpdateDetails.productInfo : product
+              }
+              ) || []
             }
-            ) || []}
           }
         );
       } else { //better to invalidate when action==="create" because it brings many edge cases one of them being the new prod should respect the filters and its index in the array should be based on the sortOrder
