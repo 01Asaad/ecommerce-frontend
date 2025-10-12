@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useNavigate, useParams, useLoaderData } from 'react-router-dom';
 import { useUser } from "../context/UserProvider";
 import { TEMPLATEIMAGES } from "../constants/index"
-import PopupModal from "../components/PopupModal";
+import PopupModal from "../components/UI/PopupModal";
 import axios from "axios";
 import useTWBreakpoints from "../hooks/useTWBreakpoints";
 

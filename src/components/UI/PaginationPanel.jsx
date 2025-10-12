@@ -1,4 +1,7 @@
 import React, { useMemo, useRef } from 'react';
+
+const PERPAGEOPTIONS = [5, 10, 20, 30, 40, 50]
+
 function PaginationPanel({ totalItems, totalPages, pageState, setPageState }) {
 
 	const dynamicPageRef = useRef()
@@ -58,12 +61,9 @@ function PaginationPanel({ totalItems, totalPages, pageState, setPageState }) {
 				<div className='space-x-2'>
 					<nav aria-label="Pagination" className="isolate inline-flex -space-x-px rounded-md">
 						<select className="rounded-md mx-2 px-1.5 py-2 text-bold text-gray-500 dark:text-gray-400 inset-ring inset-ring-gray-500 dark:inset-ring-gray-700 disabled:opacity-50 dark:bg-gray-950" value={pageState.perPage} onChange={handlePerPageChange}>
-							<option value={5}>5</option>
-							<option value={10}>10</option>
-							<option value={20}>20</option>
-							<option value={30}>30</option>
-							<option value={40}>40</option>
-							<option value={50}>50</option>
+							{PERPAGEOPTIONS.map(perPageOption => 
+								(<option key={perPageOption} value={perPageOption}>{perPageOption}</option>)
+							)}
 						</select>
 						<button
 							className="relative inline-flex items-center rounded-l-md px-2 py-2 text-bold text-gray-500 dark:text-gray-400 inset-ring inset-ring-gray-500 dark:inset-ring-gray-700 enabled:hover:bg-gray-200 enabled:dark:hover:bg-white/5 focus:z-20 focus:outline-offset-0"

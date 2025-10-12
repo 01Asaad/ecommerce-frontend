@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ProductFiltersPanel from "../components/ProductFiltersPanel.jsx";
 import ProductList from "../components/ProductList.jsx"
-import ErrorCard from '../components/ErrorCard.jsx'
+import ErrorCard from '../components/UI/ErrorCard.jsx'
 import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';

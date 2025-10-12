@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../context/UserProvider';
 import { useFetcher, useLocation, useNavigate } from 'react-router-dom';
-import PopupModal from '../components/PopupModal';
+import PopupModal from '../components/UI/PopupModal';
 import { getToken } from "../utils/helpers"
 
 function validateFormInputs(name, price, stock, image) {

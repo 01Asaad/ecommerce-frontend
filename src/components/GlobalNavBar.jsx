@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, NavLink, useLocation } from 'react-router-dom';
 import DarkThemeManage from "./DarkThemeManage"
 import { useUser } from "../context/UserProvider"
-import PopupModal from "./PopupModal"
+import PopupModal from "./UI/PopupModal"
 import useTWBreakpoint from "../hooks/useTWBreakpoints"
 function addIfActive(fixedClasses, activeClasses, inactiveClasses = "") {
     return ({ isActive }) => (fixedClasses + (isActive ? (" " + activeClasses) : (" " + inactiveClasses)))
