@@ -5,7 +5,7 @@ const PERPAGEOPTIONS = [5, 10, 20, 30, 40, 50]
 function PaginationPanel({ totalItems, totalPages, pageState, setPageState }) {
 
 	const dynamicPageRef = useRef()
-	
+
 	const { startPages, endPages } = useMemo(() => {
 		const start = totalPages > 3 ? [1, 2] : [1];
 		const end = totalPages > 2 ?
@@ -21,8 +21,9 @@ function PaginationPanel({ totalItems, totalPages, pageState, setPageState }) {
 	const dynamicPageInputValue = isDynamicPageSelected ? (pageState.page + 1) : "..."
 
 	const handlePerPageChange = (event) => {
-		const newTotalPages = Math.ceil(totalItems / event.target.value)
-		setPageState((prev) => { return { ...prev, perPage: event.target.value, page: prev.page > (newTotalPages - 1) ? newTotalPages - 1 : prev.page } })
+		const newPerPage = parseInt(event.target.value)
+		const newTotalPages = Math.ceil(totalItems / newPerPage)
+		setPageState((prev) => { return { ...prev, perPage: newPerPage, page: prev.page > (newTotalPages - 1) ? newTotalPages - 1 : prev.page } })
 	};
 	const handlePageChange = (event) => {
 		event.preventDefault()
@@ -52,64 +53,66 @@ function PaginationPanel({ totalItems, totalPages, pageState, setPageState }) {
 	return (
 		<div className="flex items-center justify-between border-t border-black/60 dark:border-white/10 px-4 py-3 sm:px-6">
 			<div className="sm:flex sm:flex-1 sm:items-center sm:justify-between">
-				<div>
+				<div role="status" aria-label='paginationStatus'>
 					<p className="text-sm text-gray-700 dark:text-gray-300">
 						Showing <span className="font-medium">{pageState.page * pageState.perPage + 1}</span> to <span className="font-medium">{Math.min(totalItems, pageState.page * pageState.perPage + pageState.perPage)}</span> of{' '}
 						<span className="font-medium">{totalItems}</span> results
 					</p>
 				</div>
 				<div className='space-x-2'>
-					<nav aria-label="Pagination" className="isolate inline-flex -space-x-px rounded-md">
+					<nav className="isolate inline-flex -space-x-px rounded-md">
 						<select className="rounded-md mx-2 px-1.5 py-2 text-bold text-gray-500 dark:text-gray-400 inset-ring inset-ring-gray-500 dark:inset-ring-gray-700 disabled:opacity-50 dark:bg-gray-950" value={pageState.perPage} onChange={handlePerPageChange}>
-							{PERPAGEOPTIONS.map(perPageOption => 
+							{PERPAGEOPTIONS.map(perPageOption =>
 								(<option key={perPageOption} value={perPageOption}>{perPageOption}</option>)
 							)}
 						</select>
-						<button
-							className="relative inline-flex items-center rounded-l-md px-2 py-2 text-bold text-gray-500 dark:text-gray-400 inset-ring inset-ring-gray-500 dark:inset-ring-gray-700 enabled:hover:bg-gray-200 enabled:dark:hover:bg-white/5 focus:z-20 focus:outline-offset-0"
-							onClick={handlePrevPageClick}
-							disabled={pageState.page === 0} >
-							<span aria-hidden="true" className="size-5">{"<"}</span>
-						</button>
-						{startPages.map((pageNum) => {
+						<div className='inline-flex' aria-label="Pagination" role='navigation'>
+							<button
+								className="relative inline-flex items-center rounded-l-md px-2 py-2 text-bold text-gray-500 dark:text-gray-400 inset-ring inset-ring-gray-500 dark:inset-ring-gray-700 enabled:hover:bg-gray-200 enabled:dark:hover:bg-white/5 focus:z-20 focus:outline-offset-0"
+								onClick={handlePrevPageClick}
+								disabled={pageState.page === 0} >
+								<span className="size-5">{"<"}</span>
+							</button>
+							{startPages.map((pageNum) => {
 
-							return (
-								<button
+								return (
+									<button
+										aria-current="page"
+										key={pageNum}
+										className={"inline-flex items-center px-4 py-2 text-sm font-semibold " + (pageNum === pageState.page + 1 ? selectedClasses : unselectedClasses)}
+										onClick={() => { selectPageHandle(pageNum - 1) }} >
+										{pageNum}
+									</button>
+								)
+							})}
+							{isInputPageShown &&
+								<form onSubmit={handlePageChange}>
+									<input
+										ref={dynamicPageRef}
+										className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-400 inset-ring inset-ring-gray-500 dark:inset-ring-gray-700 focus:outline-offset-0 w-12 text-center ${isDynamicPageSelected ? "bg-indigo-500" : ""}`}
+										defaultValue={dynamicPageInputValue}
+										onFocus={() => { dynamicPageRef.current.value = "" }}
+										onBlur={dynamicPageBlurHandler}
+										name='dynamicPage' >
+									</input>
+								</form>
+							}
+							{endPages.map((pageNum) => {
+								return (<button
 									aria-current="page"
 									key={pageNum}
-									className={"inline-flex items-center px-4 py-2 text-sm font-semibold " + (pageNum === pageState.page + 1 ? selectedClasses : unselectedClasses)}
-									onClick={() => { selectPageHandle(pageNum - 1) }} >
+									onClick={() => { selectPageHandle(pageNum - 1) }}
+									className={"inline-flex items-center px-4 py-2 text-sm font-semibold " + (pageNum === pageState.page + 1 ? selectedClasses : unselectedClasses)} >
 									{pageNum}
-								</button>
-							)
-						})}
-						{isInputPageShown &&
-							<form onSubmit={handlePageChange}>
-								<input
-									ref={dynamicPageRef}
-									className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-400 inset-ring inset-ring-gray-500 dark:inset-ring-gray-700 focus:outline-offset-0 w-12 text-center ${isDynamicPageSelected ? "bg-indigo-500" : ""}`}
-									defaultValue={dynamicPageInputValue}
-									onFocus={() => { dynamicPageRef.current.value = "" }}
-									onBlur={dynamicPageBlurHandler}
-									name='dynamicPage' >
-								</input>
-							</form>
-						}
-						{endPages.map((pageNum) => {
-							return (<button
-								aria-current="page"
-								key={pageNum}
-								onClick={() => { selectPageHandle(pageNum - 1) }}
-								className={"inline-flex items-center px-4 py-2 text-sm font-semibold " + (pageNum === pageState.page + 1 ? selectedClasses : unselectedClasses)} >
-								{pageNum}
-							</button>)
-						})}
-						<button
-							className="relative inline-flex items-center rounded-r-md px-2 py-2 text-bold text-gray-500 dark:text-gray-400 inset-ring inset-ring-gray-500 dark:inset-ring-gray-700 enabled:hover:bg-gray-200 enabled:dark:hover:bg-white/5 focus:z-20 focus:outline-offset-0"
-							onClick={handleNextPageClick}
-							disabled={pageState.page === totalPages - 1} >
-							<span aria-hidden="true" className="size-5" >{">"}</span>
-						</button>
+								</button>)
+							})}
+							<button
+								className="relative inline-flex items-center rounded-r-md px-2 py-2 text-bold text-gray-500 dark:text-gray-400 inset-ring inset-ring-gray-500 dark:inset-ring-gray-700 enabled:hover:bg-gray-200 enabled:dark:hover:bg-white/5 focus:z-20 focus:outline-offset-0"
+								onClick={handleNextPageClick}
+								disabled={pageState.page === totalPages - 1} >
+								<span className="size-5" >{">"}</span>
+							</button>
+						</div>
 					</nav>
 				</div>
 			</div>

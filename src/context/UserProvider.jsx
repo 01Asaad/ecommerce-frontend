@@ -56,8 +56,7 @@ export const UserProvider = ({ children }) => {
       setAuthData(a => { return { ...a, isLoggedIn: false, isLoading: false } });
     }
   };
-
-  useEffect(() => {
+  useEffect(() => {    
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const { token } = JSON.parse(storedUser);
