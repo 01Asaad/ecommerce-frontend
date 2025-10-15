@@ -20,7 +20,7 @@ const router = createBrowserRouter([
       { path: "/products", element: <ProductViewer key="products" isShowAllProductsButtonShown={false} isFiltersPanelShown isAddButttonEnabled /> },
       { path: "/products/view/:productID", element: <ProductView />, loader: productViewLoader, shouldRevalidate : productViewShouldReevaluate },
       { path: "/products/add", element: <ProductAdd />, action: productAddAction },
-      { path: "/products/modify/:productID", element: <ProductAdd />, action: productAddAction },
+      { path: "/products/modify/:productID", element: <ProductAdd />, action: productAddAction, loader : productViewLoader, shouldRevalidate : productViewShouldReevaluate },
     ]
   },
   {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../context/UserProvider';
-import { useFetcher, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useFetcher, useLoaderData, useLocation, useNavigate, useParams } from 'react-router-dom';
 import PopupModal from '../components/UI/PopupModal';
 import { getToken } from "../utils/helpers"
 
@@ -61,7 +61,7 @@ export default function ProductAdd() {
   const { productID : productIDParam } = useParams()  
   const location = useLocation()
   const submitFetcher = useFetcher()
-  const getProductFetcher = useFetcher()
+  const loaderResponse = useLoaderData()
   const [isEditing, setIsEditing] = useState('')
   const [error, setError] = useState("")
   const [formData, setFormData] = useState({
@@ -89,39 +89,13 @@ export default function ProductAdd() {
   }, [submitFetcher.state])
 
 
-  useEffect(() => {
-    if (location?.state?.productInfo) {
-      setFormData({
-        name: location.state.productInfo.name,
-        price: location.state.productInfo.price,
-        stock: location.state.productInfo.stock,
-        image: null
-      })
-      setIsEditing(location.state.productInfo._id)
-    } else {
-      setFormData({
-        name: '',
-        price: '',
-        stock: '',
-        image: null
-      })
-      setIsEditing('')
-    }
-  }, [location.state?.productInfo?._id])
+  
   useEffect(() => {
     if (location.pathname.includes("modify")) {
       setIsEditing(productIDParam)
-      console.log("yes");
-      getProductFetcher.load(`/products/view/` + productIDParam);
-      console.log(getProductFetcher.data);
+      setFormData(loaderResponse.data)
     }
   }, [])
-  useEffect(() => {
-    if (getProductFetcher.data) {
-    const { data } = getProductFetcher.data;
-    setFormData(data);
-  }
-  }, getProductFetcher.data)
 
   useEffect(() => {
     if (!userCtx.isLoading && !userCtx.isLoggedIn) {
