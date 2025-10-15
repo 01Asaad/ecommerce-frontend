@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useUser } from '../context/UserProvider';
-import { useFetcher, useLocation, useNavigate } from 'react-router-dom';
+import { useFetcher, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import PopupModal from '../components/UI/PopupModal';
 import { getToken } from "../utils/helpers"
 
@@ -58,8 +58,10 @@ export async function action({ request, params }) {
 export default function ProductAdd() {
   const userCtx = useUser()
   const navigateTo = useNavigate()
+  const { productID : productIDParam } = useParams()  
   const location = useLocation()
-  const fetcher = useFetcher()
+  const submitFetcher = useFetcher()
+  const getProductFetcher = useFetcher()
   const [isEditing, setIsEditing] = useState('')
   const [error, setError] = useState("")
   const [formData, setFormData] = useState({
@@ -69,22 +71,22 @@ export default function ProductAdd() {
     image: null
   });
   useEffect(() => {
-    if (fetcher.state === "idle") {
-      if (fetcher.data?.success) {
+    if (submitFetcher.state === "idle") {
+      if (submitFetcher.data?.success) {
         navigateTo("/products", {
-            state: {
-                from: location.pathname,
-                productsUpdated: true,
-                productUpdateDetails: { "action": isEditing ? "modify" : "create", productInfo : fetcher.data.resData.productInfo }
-            }
+          state: {
+            from: location.pathname,
+            productsUpdated: true,
+            productUpdateDetails: { "action": isEditing ? "modify" : "create", productInfo: submitFetcher.data.resData.productInfo }
+          }
         })
-      } else if (fetcher.data?.error) {
+      } else if (submitFetcher.data?.error) {
 
-        setError(fetcher.data.error?.response?.data?.message || fetcher.data.error?.message);
+        setError(submitFetcher.data.error?.response?.data?.message || submitFetcher.data.error?.message);
       }
     }
 
-  }, [fetcher.state])
+  }, [submitFetcher.state])
 
 
   useEffect(() => {
@@ -106,6 +108,20 @@ export default function ProductAdd() {
       setIsEditing('')
     }
   }, [location.state?.productInfo?._id])
+  useEffect(() => {
+    if (location.pathname.includes("modify")) {
+      setIsEditing(productIDParam)
+      console.log("yes");
+      getProductFetcher.load(`/products/view/` + productIDParam);
+      console.log(getProductFetcher.data);
+    }
+  }, [])
+  useEffect(() => {
+    if (getProductFetcher.data) {
+    const { data } = getProductFetcher.data;
+    setFormData(data);
+  }
+  }, getProductFetcher.data)
 
   useEffect(() => {
     if (!userCtx.isLoading && !userCtx.isLoggedIn) {
@@ -121,7 +137,7 @@ export default function ProductAdd() {
     }));
   };
 
-  const isIdle = fetcher.state === "idle"
+  const isIdle = submitFetcher.state === "idle"
   return (
     <>
       {error && <PopupModal title="Failed creating product" isError content={error} onConfirm={() => { setError('') }} onIgnore={() => { setError('') }}></PopupModal>}
@@ -129,7 +145,7 @@ export default function ProductAdd() {
       {isEditing && <h1 className='mt-14 mb-0 mx-6 text-lg'>Edit Product</h1>}
       {isEditing && <h2 className='mb-2 mx-6 text-sm text-cyan-950'>#{isEditing}</h2>}
       <div className='flex justify-center items-center mt-2 mx-5 rounded-2xl h-full p-2 border-gray-600'>
-        <fetcher.Form method='post' encType="multipart/form-data" className='flex flex-col'>
+        <submitFetcher.Form method='post' encType="multipart/form-data" className='flex flex-col'>
           <div className='my-1 flex flex-col'>
             <label>Product Name</label>
             <input
@@ -170,7 +186,7 @@ export default function ProductAdd() {
               name="image"
               className="block w-full file:w-full text-sm text-slate-500 file:border-0 file:bg-violet-50 dark:file:bg-gray-900 file:px-5 file:py-2 file:text-sm file:text-violet-500 dark:file:text-violet-800 hover:file:cursor-pointer rounded-lg file:rounded-lg placeholder:text-gray-500 hover:cursor-pointer outline-1 -outline-offset-1 dark:outline-white/10 outline-black/25 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500"
               onChange={handleChange} />
-              <span className='ml-1 text-sm text-gray-400'>{formData.image?.name || ""}</span>
+            <span className='ml-1 text-sm text-gray-400'>{formData.image?.name || ""}</span>
           </div>
           <div className='flex justify-end'>
 
@@ -178,9 +194,9 @@ export default function ProductAdd() {
               type="submit"
               className={`rounded-lg ${isIdle ? "bg-indigo-500 hover:cursor-pointer" : "bg-blue-300"} w-24 py-2 mt-4`}
               disabled={!isIdle}
-            >{fetcher.state === "submitting" ? (isEditing ? "Editing" : "Creating") : (isEditing ? "Edit" : "Create")}</button>
+            >{submitFetcher.state === "submitting" ? (isEditing ? "Editing" : "Creating") : (isEditing ? "Edit" : "Create")}</button>
           </div>
-        </fetcher.Form>
+        </submitFetcher.Form>
       </div>
     </>
   );
